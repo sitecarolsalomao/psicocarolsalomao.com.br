@@ -1,0 +1,36 @@
+# Espelha a main deste repo (conta do Gustavo) no repo privado da conta da Carol.
+# O Cloudflare dela builda e publica a partir do espelho. Push na main é publicação.
+#
+# Precisa de:
+# - secret MIRROR_SSH_KEY neste repo, com a chave privada
+# - a chave pública como deploy key, com permissão de escrita, no repo espelho
+name: Espelho
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: espelho
+  cancel-in-progress: false
+
+jobs:
+  espelhar:
+    # Este arquivo também chega ao espelho. Lá ele não pode rodar.
+    if: github.repository_owner == 'the-almeida'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.MIRROR_SSH_KEY }}
+
+      - name: Empurrar para o espelho
+        run: git push --force git@github.com:sitecarolsalomao/psicocarolsalomao.com.br.git HEAD:main

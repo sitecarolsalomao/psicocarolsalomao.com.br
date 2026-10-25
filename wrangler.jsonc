@@ -1,0 +1,11 @@
+// Cloudflare Workers com static assets. Site estático: sem script "main".
+// O Workers Builds da conta da Carol builda o repo espelho com `npm run build` e publica o ./dist.
+// O nome do Worker no painel precisa ser igual ao "name" daqui.
+{
+	"name": "psicocarolsalomao",
+	"compatibility_date": "2026-10-24",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page"
+	}
+}
