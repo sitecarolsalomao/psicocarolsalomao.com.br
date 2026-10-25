@@ -7,7 +7,7 @@ Astro 7, estático, publicado no Cloudflare Workers. Sem CMS: o conteúdo é mar
 ## Rodar
 
 ```sh
-nvm use          # Node 22, versão fixa no .nvmrc
+nvm use          # Node 24, versão fixa no .nvmrc
 npm install
 npm run dev      # http://localhost:4321
 npm run build    # gera o dist/
@@ -66,6 +66,6 @@ Painel da Cloudflare → Workers → `psicocarolsalomao` → Deployments → esc
 
 ## Manutenção
 
-- O `.nvmrc` fixa a versão exata, 22.23.4, porque o Astro 7.4 recusa rodar abaixo dela, e o build da Cloudflare traz a 22.23.2 pré-instalada. Com `22` sozinho, o build quebra. Se a Cloudflare não instalar a 22.23.4, a saída é `24`, que já vem pré-instalada.
-- Node 22 sai de manutenção em abril de 2027. Para trocar, mudar o `.nvmrc` e o `engines` do `package.json` juntos.
+- O `.nvmrc` fixa o Node 24, a LTS mais recente, só pela versão maior. O build da Cloudflare já traz o 24 pré-instalado e as correções de segurança da linha 24 entram sem mexer no repo.
+- Node 24 sai de manutenção em abril de 2028. Para trocar, mudar o `.nvmrc` e o `engines` do `package.json` juntos.
 - As Actions do workflow estão fixadas por hash de commit, com a versão no comentário.
