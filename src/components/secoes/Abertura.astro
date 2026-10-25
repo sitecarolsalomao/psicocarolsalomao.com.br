@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+
+interface Props {
+	secao: CollectionEntry<'secoes'> & { data: { tipo: 'abertura' } };
+}
+
+const { secao } = Astro.props;
+const { Content } = await render(secao);
+---
+
+<section class="abertura">
+	<p class="abertura-ancora">{secao.data.ancora}</p>
+	<h1 class="abertura-headline">{secao.data.headline}</h1>
+	<div class="abertura-texto"><Content /></div>
+	<div class="abertura-acoes">
+		<BotaoWhatsapp>{secao.data.botao}</BotaoWhatsapp>
+		{secao.data.conhecaAbordagem && <a class="link-discreto" href="#abordagem">{secao.data.conhecaAbordagem}</a>}
+	</div>
+</section>

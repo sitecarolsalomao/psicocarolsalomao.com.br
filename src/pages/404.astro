@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+
+<Base titulo={`Página não encontrada · ${site.nome}`} descricao="Esta página não existe." semIndice>
+	<article class="pagina">
+		<h1>Esta página não existe</h1>
+		<p>O endereço pode ter mudado. O começo do site está a um clique.</p>
+		<a class="botao" href="/">Ir para o início</a>
+	</article>
+</Base>

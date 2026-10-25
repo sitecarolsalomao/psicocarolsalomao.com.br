@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
+import BotaoWhatsapp from './BotaoWhatsapp.astro';
+import { ancoraDe } from './secoes/ancora';
+
+const secoes = (await getCollection('secoes')).sort((a, b) => a.id.localeCompare(b.id));
+const itens = secoes
+	.filter((s) => 'menu' in s.data && s.data.menu)
+	.map((s) => ({ rotulo: (s.data as { menu: string }).menu, href: `/#${ancoraDe(s.id)}` }));
+---
+
+<header class="cabecalho">
+	<a class="marca" href="/">
+		<span class="marca-nome">{site.nome}</span>
+		<span class="marca-registro">{site.profissao} · {site.crp}</span>
+	</a>
+	<nav aria-label="Seções">
+		<details class="menu">
+			<summary>Menu</summary>
+			<ul>
+				{itens.map((item) => <li><a href={item.href}>{item.rotulo}</a></li>)}
+			</ul>
+		</details>
+	</nav>
+	<BotaoWhatsapp classe="cabecalho-whatsapp">WhatsApp</BotaoWhatsapp>
+</header>

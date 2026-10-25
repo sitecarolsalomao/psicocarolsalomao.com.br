@@ -1,0 +1,17 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+
+interface Props {
+	secao: CollectionEntry<'secoes'> & { data: { tipo: 'convite' } };
+}
+
+const { secao } = Astro.props;
+const { Content } = await render(secao);
+---
+
+<section class="convite">
+	<div class="corpo"><Content /></div>
+	<BotaoWhatsapp>{secao.data.botao}</BotaoWhatsapp>
+</section>

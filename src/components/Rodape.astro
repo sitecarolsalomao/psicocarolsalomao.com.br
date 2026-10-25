@@ -1,0 +1,18 @@
+---
+import { site } from '../data/site';
+import BotaoWhatsapp from './BotaoWhatsapp.astro';
+---
+
+<footer class="rodape">
+	<p class="rodape-registro">{site.nomeCompleto} · {site.profissao} · {site.crp}</p>
+	<p>Atendimento individual online.</p>
+	<p>
+		<BotaoWhatsapp classe="rodape-link">WhatsApp</BotaoWhatsapp>
+		· <a class="rodape-link" href={`mailto:${site.email}`}>{site.email}</a>
+	</p>
+	<p class="rodape-aviso">
+		Este site não oferece atendimento de urgência. Em caso de crise, ligue 188 (CVV, 24 horas) ou procure o serviço de
+		emergência mais próximo.
+	</p>
+	<p><a class="rodape-link" href="/politica-de-privacidade/">Política de privacidade</a></p>
+</footer>

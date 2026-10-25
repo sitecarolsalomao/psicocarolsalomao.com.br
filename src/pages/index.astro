@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import Abertura from '../components/secoes/Abertura.astro';
+import Abordagem from '../components/secoes/Abordagem.astro';
+import Aprofundamento from '../components/secoes/Aprofundamento.astro';
+import Convite from '../components/secoes/Convite.astro';
+import Perguntas from '../components/secoes/Perguntas.astro';
+import QuemTeEscuta from '../components/secoes/QuemTeEscuta.astro';
+import Texto from '../components/secoes/Texto.astro';
+
+const secoes = (await getCollection('secoes')).sort((a, b) => a.id.localeCompare(b.id));
+const blocos = {
+	abertura: Abertura,
+	abordagem: Abordagem,
+	'quem-te-escuta': QuemTeEscuta,
+	texto: Texto,
+	aprofundamento: Aprofundamento,
+	perguntas: Perguntas,
+	convite: Convite,
+};
+---
+
+<Base titulo={`${site.nome} · ${site.profissao}`} descricao={site.descricao}>
+	{
+		secoes.map((secao) => {
+			const Bloco = blocos[secao.data.tipo];
+			return <Bloco secao={secao as never} />;
+		})
+	}
+</Base>

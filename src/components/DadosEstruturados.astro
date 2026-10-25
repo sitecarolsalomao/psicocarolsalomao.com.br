@@ -1,0 +1,34 @@
+---
+import { site } from '../data/site';
+
+// Pessoa + serviço, sem endereço: o atendimento é online e o endereço dela não fica público.
+const dados = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'Person',
+			'@id': `${site.url}/#carol`,
+			name: site.nomeCompleto,
+			alternateName: site.nome,
+			jobTitle: site.profissao,
+			identifier: { '@type': 'PropertyValue', propertyID: 'CRP', value: site.crp.replace('CRP ', '') },
+			email: site.email,
+			url: site.url,
+			knowsLanguage: 'pt-BR',
+		},
+		{
+			'@type': 'ProfessionalService',
+			'@id': `${site.url}/#atendimento`,
+			name: `${site.nome}, ${site.profissao.toLowerCase()}`,
+			description: site.descricao,
+			url: site.url,
+			email: site.email,
+			founder: { '@id': `${site.url}/#carol` },
+			areaServed: { '@type': 'Country', name: 'BR' },
+			availableLanguage: 'pt-BR',
+		},
+	],
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(dados)} />

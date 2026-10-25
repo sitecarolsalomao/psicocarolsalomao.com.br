@@ -1,0 +1,51 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+import Analytics from '../components/Analytics.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import DadosEstruturados from '../components/DadosEstruturados.astro';
+import Rodape from '../components/Rodape.astro';
+
+interface Props {
+	titulo: string;
+	descricao: string;
+	// Caminho de uma imagem em public/ para a prévia do link (1200x630).
+	imagem?: string;
+	semIndice?: boolean;
+}
+
+const { titulo, descricao, imagem, semIndice = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{titulo}</title>
+		<meta name="description" content={descricao} />
+		{semIndice ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="pt_BR" />
+		<meta property="og:site_name" content={site.nome} />
+		<meta property="og:title" content={titulo} />
+		<meta property="og:description" content={descricao} />
+		<meta property="og:url" content={canonical} />
+		{imagem && <meta property="og:image" content={new URL(imagem, Astro.site)} />}
+		<meta name="twitter:card" content={imagem ? 'summary_large_image' : 'summary'} />
+		<DadosEstruturados />
+		<slot name="head" />
+		<Analytics />
+	</head>
+	<body>
+		<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+		<Cabecalho />
+		<main id="conteudo">
+			<slot />
+		</main>
+		<Rodape />
+	</body>
+</html>

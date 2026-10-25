@@ -1,0 +1,44 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import { site } from '../../data/site';
+import { ancoraDe } from './ancora';
+
+interface Props {
+	secao: CollectionEntry<'secoes'> & { data: { tipo: 'perguntas' } };
+}
+
+const { secao } = Astro.props;
+const { Content } = await render(secao);
+const perguntas = (await getCollection('perguntas')).sort((a, b) => a.data.ordem - b.data.ordem);
+const respostas = await Promise.all(perguntas.map(async (p) => ({ ...p, Resposta: (await render(p)).Content })));
+
+// As respostas também vão como FAQPage: é o formato que buscadores e chats de IA recortam e citam.
+const semTags = (html = '') => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const faq = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: perguntas.map((p) => ({
+		'@type': 'Question',
+		name: p.data.pergunta,
+		acceptedAnswer: { '@type': 'Answer', text: semTags(p.rendered?.html) },
+	})),
+	author: { '@id': `${site.url}/#carol` },
+};
+---
+
+<section class="secao perguntas" id={ancoraDe(secao.id)}>
+	{secao.data.titulo && <h2>{secao.data.titulo}</h2>}
+	<div class="corpo"><Content /></div>
+	{
+		respostas.map(({ data, Resposta }) => (
+			<details class="pergunta">
+				<summary>{data.pergunta}</summary>
+				<div class="corpo">
+					<Resposta />
+				</div>
+			</details>
+		))
+	}
+	{perguntas.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(faq)} />}
+</section>

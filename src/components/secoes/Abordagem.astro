@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Icone from '../Icone.astro';
+import { ancoraDe } from './ancora';
+
+interface Props {
+	secao: CollectionEntry<'secoes'> & { data: { tipo: 'abordagem' } };
+}
+
+const { secao } = Astro.props;
+const { Content } = await render(secao);
+---
+
+<section class="secao" id={ancoraDe(secao.id)}>
+	{secao.data.titulo && <h2>{secao.data.titulo}</h2>}
+	<div class="corpo"><Content /></div>
+	{
+		secao.data.cards.length > 0 && (
+			<ul class="cards">
+				{secao.data.cards.map((card) => (
+					<li class="card">
+						<Icone nome={card.icone} />
+						<h3>{card.titulo}</h3>
+						<p>{card.texto}</p>
+					</li>
+				))}
+			</ul>
+		)
+	}
+</section>

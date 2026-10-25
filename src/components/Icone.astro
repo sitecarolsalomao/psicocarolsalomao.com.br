@@ -1,0 +1,20 @@
+---
+// Ícones de traço, desenhados para o site. Novo ícone = novo caso aqui.
+interface Props {
+	nome: string;
+}
+
+const { nome } = Astro.props;
+---
+
+<svg class="icone" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+	{nome === 'vinculos' && (
+		<>
+			<circle cx="17" cy="24" r="9" />
+			<circle cx="31" cy="24" r="9" />
+		</>
+	)}
+	{nome === 'raizes' && <path d="M24 6v16m0 0c-4 4-10 6-14 14m14-14c4 4 10 6 14 14M24 22v20" />}
+	{nome === 'marcas' && <path d="M8 30c6-10 12-10 16-4s10 6 16-4M8 20c6-10 12-10 16-4s10 6 16-4" />}
+	{nome === 'cuidado' && <path d="M24 40c-10-6-16-12-16-20a8 8 0 0 1 16-2 8 8 0 0 1 16 2c0 8-6 14-16 20z" />}
+</svg>
