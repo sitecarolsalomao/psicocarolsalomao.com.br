@@ -43,6 +43,8 @@ Só a `main` publica. Não existe preview por branch.
 
 ### Espelho
 
+As Actions deste repo estão desligadas desde o primeiro push (27/10), para o espelho não rodar e falhar antes de existir. Religar em Settings → Actions → General depois do passo 4.
+
 1. Na conta `sitecarolsalomao`, criar o repo privado `psicocarolsalomao.com.br` **vazio, sem README**, para ele não nascer com commit próprio.
 2. `ssh-keygen -t ed25519 -f mirror_key -N "" -C "espelho psicocarolsalomao"`
 3. `mirror_key.pub` como **deploy key com permissão de escrita** no repo espelho.
