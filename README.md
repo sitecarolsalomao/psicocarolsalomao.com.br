@@ -37,7 +37,7 @@ este repo (conta do Gustavo, main)
 
 Só a `main` publica. Não existe preview por branch.
 
-**A regra do espelho:** o repo da conta da Carol é só leitura. Qualquer commit feito lá é apagado na próxima sincronização. Todo commit acontece aqui; a conta `sitecarolsalomao` é colaboradora deste repo.
+**A regra do espelho:** até a entrega, o repo da conta da Carol é só leitura. Qualquer commit feito lá é apagado na próxima sincronização. Todo commit acontece aqui, e a conta `sitecarolsalomao` não é colaboradora deste repo em nenhum momento. Na entrega a regra inverte: o espelho desliga, o repo dela vira a fonte e a produção, e este repo fica congelado.
 
 ## Configuração, uma vez só
 
