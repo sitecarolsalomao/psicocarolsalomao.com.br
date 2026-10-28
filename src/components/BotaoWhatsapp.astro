@@ -8,4 +8,4 @@ interface Props {
 const { classe = 'botao' } = Astro.props;
 ---
 
-<a class={classe} href={linkWhatsapp} data-whatsapp target="_blank" rel="noopener"><slot /></a>
+<a class={classe} href={linkWhatsapp} data-umami-event="whatsapp" target="_blank" rel="noopener"><slot /></a>

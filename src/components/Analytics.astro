@@ -1,28 +1,9 @@
 ---
 import { site } from '../data/site';
 
-// GA4 sem banner, por legítimo interesse: Google Signals e personalização de anúncios desligados.
-// A única conversão do site é o clique no WhatsApp.
-const id = site.ga4;
+// Umami Cloud, plano grátis: sem cookies e sem dado pessoal, por isso sem banner.
+// A única conversão do site é o clique no WhatsApp, marcado com data-umami-event no BotaoWhatsapp.
+const id = site.umami;
 ---
 
-{
-	id && (
-		<>
-			<script async src={`https://www.googletagmanager.com/gtag/js?id=${id}`} />
-			<script is:inline define:vars={{ id }}>
-				window.dataLayer = window.dataLayer || [];
-				function gtag() {
-					dataLayer.push(arguments);
-				}
-				gtag('js', new Date());
-				gtag('config', id, { allow_google_signals: false, allow_ad_personalization_signals: false });
-				document.addEventListener('click', (evento) => {
-					if (evento.target instanceof Element && evento.target.closest('a[data-whatsapp]')) {
-						gtag('event', 'whatsapp_click');
-					}
-				});
-			</script>
-		</>
-	)
-}
+{id && <script defer src="https://cloud.umami.is/script.js" data-website-id={id} />}

@@ -13,7 +13,7 @@ Só o conteúdo:
 - `src/content/paginas/`: as páginas de aprofundamento. Página nova é arquivo novo no mesmo formato, e o nome do arquivo vira o endereço (`saude-da-mulher.md` responde em `/saude-da-mulher/`).
 - `src/assets/`: as fotos usadas nas seções.
 
-Não mexa em layout, cores, fontes nem configuração: `src/components/`, `src/layouts/`, `src/styles/`, `src/pages/`, `src/data/`, `astro.config.mjs`, `wrangler.jsonc`, `package.json`, `.github/`. Se o pedido precisar disso, diga à Carol que essa parte é com o Gustavo.
+Evite mexer em layout, cores, fontes nem configuração: `src/components/`, `src/layouts/`, `src/styles/`, `src/pages/`, `src/data/`, `astro.config.mjs`, `wrangler.jsonc`, `package.json`, `.github/`. Se o pedido precisar disso, diga à Carol ela está fazendo uma mudança mais estrutural no site e que precisa ser feito com atenção pra não arrumar uma coisa a custo de quebrar outra.
 
 ## Como trabalhar
 
@@ -36,7 +36,7 @@ O site é divulgação profissional de psicóloga e segue o Código de Ética do
 - Não usar "prática" nem "práticas integrativas" para falar do trabalho dela.
 - Não usar "especialista", que é título regulado pelo conselho. Use "formação em".
 - Não prometer resultado, não falar de preço, não publicar depoimento e não comparar com outros profissionais.
-- O nome completo, "Psicóloga" e o CRP continuam visíveis no rodapé de todas as páginas.
+- O nome completo, "Psicóloga" e o CRP continuam visíveis no menu superior de todas as páginas.
 - "Feminista" não entra no menu nem no título da abertura. No corpo dos textos, pode.
 - Nada sobre atendimento presencial.
 
