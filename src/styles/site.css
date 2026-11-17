@@ -1,0 +1,1814 @@
+/* A identidade visual do site: o design E do protótipo, na versão 6, que a Carol escolheu em 17/11.
+   O único enfeite do design é o fio: o do botão, o do título e os desenhos das páginas, tirados do "tecendo" dela.
+   Os seletores começam por :root, que pesa o mesmo que o [data-design='e'] do protótipo, para nada mudar de lugar. */
+
+:root {
+	--fundo: #f3f2ee;
+	--superficie: #fbfaf7;
+	--faixa: #e8e6e0;
+	--faixa-forte: #b8b688;
+	/* Sobre a faixa forte, o texto escuro: 7,1:1. */
+	--sobre-faixa-forte: #23261f;
+	--texto: #2b2e2a;
+	--texto-suave: #565a53;
+	--linha: #d8d6cf;
+	--acento: #4b6250;
+	--acento-suave: #cdd6c9;
+	--botao: #2b2e2a;
+	--botao-texto: #f7f6f2;
+	--fonte-titulo: var(--fonte-newsreader);
+	--fonte-texto: var(--fonte-figtree);
+	--peso-titulo: 300;
+	--raio: 0;
+	/* De 16 px no celular a 18 px no computador, em rem: segue o tamanho de letra que a pessoa escolheu no navegador. */
+	--tamanho-texto: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+	--largura: 70rem;
+	/* Uma margem só, a mesma do cabeçalho, para o cabeçalho, a abertura e as seções começarem na mesma linha. */
+	--margem: clamp(1.25rem, 4vw, 3rem);
+	/* O menu tem 63 px: com os 5rem da base, sobra uma tira da seção anterior em cima de cada âncora. */
+	scroll-padding-top: 3.9rem;
+}
+
+:root .dentro {
+	width: min(100% - 2 * var(--margem), var(--largura));
+}
+
+/* A coluna de texto medida pela letra: uns 65 a 70 caracteres por linha em qualquer tamanho. */
+:root .corpo {
+	max-width: 36em;
+}
+
+/* Menu */
+
+:root .cabecalho {
+	background: var(--faixa);
+	backdrop-filter: none;
+	border-bottom: 0;
+}
+
+/* O menu do celular em tela cheia, de vidro: o claro da navbar translúcido, com a página desfocada atrás. O véu é
+   denso o bastante para o texto escuro passar de 7:1 mesmo em cima da parte mais escura da foto. Sem desfoque no
+   navegador, ou para quem pede menos transparência ou mais contraste no sistema, o fundo fica sólido. */
+
+:root .menu-cheio {
+	position: fixed;
+	inset: 0;
+	z-index: 30;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	padding: 0 clamp(1.25rem, 4vw, 3rem) 2.5rem;
+	background:
+		linear-gradient(160deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0) 45%),
+		rgb(232 230 224 / 0.8);
+	-webkit-backdrop-filter: blur(22px) saturate(1.5);
+	backdrop-filter: blur(22px) saturate(1.5);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
+	opacity: 1;
+	transition: opacity 0.25s ease;
+}
+
+@starting-style {
+	:root .menu-celular[open] .menu-cheio {
+		opacity: 0;
+	}
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	:root .menu-cheio {
+		background: var(--faixa);
+	}
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+	:root .menu-cheio {
+		background: var(--faixa);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .menu-cheio {
+		transition: none;
+	}
+}
+
+/* Com o menu aberto, a página atrás não rola. Só abaixo de 76rem, onde o menu em tela cheia existe: acima disso ele
+   some, e a página não pode ficar presa a um menu invisível. */
+@media (max-width: 75.99rem) {
+	:root body:has(.menu-celular[open] .menu-cheio) {
+		overflow: hidden;
+	}
+}
+
+:root .menu-cheio-topo {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 3.9rem;
+}
+
+/* No lugar do nome, o botão do WhatsApp, no desenho do botão do menu: o bloco taupe, com o número e o ícone no
+   celular e "Conversar no WhatsApp" quando cabe, e o mesmo hover. */
+:root .menu-cheio-whatsapp {
+	position: relative;
+	isolation: isolate;
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+	padding: 0 1rem;
+	background: #72706d;
+	color: #f7f6f2;
+	font-family: var(--fonte-texto);
+	font-size: 0.7rem;
+	font-weight: 500;
+	letter-spacing: 0.24em;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+:root .menu-cheio-whatsapp::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--texto);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.3s ease;
+}
+
+:root .menu-cheio-whatsapp:is(:hover, :focus-visible)::before {
+	transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .menu-cheio-whatsapp::before {
+		transition: none;
+	}
+}
+
+/* O "Fechar" é um × de dois fios, no desenho do + das abas do "Quem te escuta". */
+:root .menu-fechar {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	min-height: 2.75rem;
+	padding: 0 0.25rem;
+	background: none;
+	border: 0;
+	color: var(--texto);
+	cursor: pointer;
+	font-family: var(--fonte-texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+:root .menu-fechar::after {
+	content: '';
+	width: 0.9rem;
+	height: 0.9rem;
+	background:
+		linear-gradient(currentColor 0 0) center / 100% 1px no-repeat,
+		linear-gradient(currentColor 0 0) center / 1px 100% no-repeat;
+	transform: rotate(45deg);
+}
+
+/* A lista fica no meio da altura, com o rótulo "Navegação" em cima, no desenho dos rótulos da trajetória. */
+:root .menu-cheio-lista {
+	margin: auto 0;
+	padding: 1.5rem 0;
+}
+
+/* Um verde mais escuro que o --acento: o vidro deixa passar a foto escura do encerramento, e o --acento caía para 3,8:1. */
+:root .menu-cheio-rotulo {
+	margin: 0 0 1.25rem;
+	color: #3b4f40;
+	font-size: 0.8rem;
+	font-weight: 500;
+	letter-spacing: 0.2em;
+	text-align: center;
+	line-height: 1.5;
+	text-transform: uppercase;
+}
+
+:root .menu-cheio ul {
+	position: static;
+	display: grid;
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: 0;
+	list-style: none;
+}
+
+:root .menu-cheio li {
+	border-bottom: 1px solid rgb(43 46 42 / 0.18);
+}
+
+:root .menu-cheio li:first-child {
+	border-top: 1px solid rgb(43 46 42 / 0.18);
+}
+
+:root .menu-cheio li a {
+	display: block;
+	padding: 0.95rem 0;
+	color: var(--texto);
+	font-family: var(--fonte-titulo);
+	font-size: clamp(1.5rem, 6vw, 2.1rem);
+	font-weight: 300;
+	line-height: 1.2;
+}
+
+:root .menu-cheio li a:hover {
+	color: var(--acento);
+}
+
+/* Botões: texto pequeno e espaçado entre dois fios, sem caixa e sem canto. Vale para todos. Os fios ficam na cor do
+   texto em repouso e não mudam no hover, quando o texto clareia: se acompanhassem o texto, sumiriam no fundo que entra,
+   e a linha pareceria pular. */
+
+:root .botao,
+:root .cabecalho-whatsapp,
+:root .link-seta {
+	display: inline-block;
+	min-width: 12.5rem;
+	margin: 0;
+	padding: 0.95rem 1.5rem;
+	background: none;
+	border: solid var(--botao-cor, var(--texto));
+	border-width: 1px 0;
+	border-radius: 0;
+	color: var(--botao-cor, var(--texto));
+	font-family: var(--fonte-texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.2em;
+	line-height: 1.5;
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition:
+		color 0.3s ease,
+		border-color 0.3s ease;
+}
+
+/* O hover do MyEverRoot (.button3 de lá): o fundo entra da esquerda e enche o espaço entre os dois fios em 0,3 s, e o
+   texto fica claro. Lá o fundo é o taupe do texto; aqui é o taupe do botão do menu, que passa de 4,5:1 com o texto
+   claro. Cada lugar troca as cores pelas variáveis, nunca pelo color, que empataria com o hover e ganharia dele:
+   --botao-cor (o texto em repouso), --botao-cheio (o fundo que entra) e --botao-sobre (o texto em cima). */
+:root .botao,
+:root .link-seta {
+	--botao-cheio: #72706d;
+	--botao-sobre: #f7f6f2;
+	position: relative;
+	isolation: isolate;
+}
+
+/* Os fios na cor do fundo que entra: no fim do hover, um bloco liso, como o .button3, e não um bloco cinza entre dois
+   fios escuros. Em repouso, o fio taupe sobre o fundo claro tem 4,4:1. No encerramento e no rodapé, o fio já era da
+   cor do fundo. */
+:root .botao,
+:root .link-seta {
+	border-color: var(--botao-cheio);
+}
+
+:root .botao::before,
+:root .link-seta::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--botao-cheio);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.3s ease;
+}
+
+:root .botao:hover,
+:root .botao:focus-visible,
+:root .link-seta:hover,
+:root .link-seta:focus-visible {
+	color: var(--botao-sobre);
+	filter: none;
+}
+
+:root .botao:hover::before,
+:root .botao:focus-visible::before,
+:root .link-seta:hover::before,
+:root .link-seta:focus-visible::before {
+	transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .botao,
+	:root .botao::before,
+	:root .link-seta,
+	:root .link-seta::before {
+		transition: none;
+	}
+}
+
+/* Os links de texto ganham o fio que cresce por baixo, no mesmo ritmo dos botões. */
+:root .link-discreto {
+	color: var(--texto);
+	text-decoration: none;
+	background: linear-gradient(currentColor 0 0) left bottom / 100% 1px no-repeat;
+	padding-bottom: 0.2em;
+	transition: background-size 0.35s ease;
+}
+
+:root .link-discreto:hover {
+	background-size: 35% 1px;
+}
+
+:root .link-seta {
+	margin-top: 0.75rem;
+}
+
+:root .link-seta::after {
+	content: none;
+}
+
+/* O do menu é o "Connect" do MyEverRoot: um bloco cheio, da altura do menu, colado na borda direita. O taupe é o
+   dele escurecido até o texto claro passar de 4,5:1 (4,6:1). */
+:root .cabecalho {
+	min-height: 3.9rem;
+	padding-block: 0;
+	padding-right: 0;
+}
+
+:root .cabecalho-whatsapp {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	align-self: stretch;
+	min-width: 0;
+	padding: 0 1.25rem;
+	background: #72706d;
+	border: 0;
+	color: #f7f6f2;
+	font-size: 0.7rem;
+	letter-spacing: 0.24em;
+}
+
+/* O hover dos outros botões: o fundo escuro entra da esquerda em 0,3 s por cima do taupe. */
+:root .cabecalho-whatsapp {
+	position: relative;
+	isolation: isolate;
+}
+
+:root .cabecalho-whatsapp::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--texto);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.3s ease;
+}
+
+:root .cabecalho-whatsapp:hover::before,
+:root .cabecalho-whatsapp:focus-visible::before {
+	transform: scaleX(1);
+}
+
+/* O aviso no fim: abaixo das perguntas, um fio claro circula sem parar em volta do botão do WhatsApp do menu, até a
+   pessoa voltar para cima. É o fio do design, só que andando. Para no hover, quando o fundo entra. Para quem pede
+   menos movimento, o fio fica parado, contornando o botão inteiro. */
+@property --volta-whatsapp {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+
+:root .cabecalho-whatsapp::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	padding: 1.5px;
+	background: conic-gradient(from var(--volta-whatsapp), transparent 0 62%, rgb(247 246 242 / 0.95) 82%, transparent 96%);
+	-webkit-mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask:
+		linear-gradient(#000 0 0) content-box exclude,
+		linear-gradient(#000 0 0);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.4s ease;
+}
+
+:root .cabecalho-whatsapp-chamando::after {
+	opacity: 1;
+	animation: volta-whatsapp 2.8s linear infinite;
+}
+
+:root .cabecalho-whatsapp-chamando:is(:hover, :focus-visible)::after {
+	opacity: 0;
+}
+
+@keyframes volta-whatsapp {
+	to {
+		--volta-whatsapp: 360deg;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .cabecalho-whatsapp-chamando::after {
+		animation: none;
+		background: rgb(247 246 242 / 0.85);
+	}
+}
+
+/* A seção atual no menu: no computador, o fio dos links cresce embaixo do item; no menu em tela cheia, o item ganha a
+   barrinha dos títulos à esquerda. */
+:root .menu-largo a {
+	padding-block: 0.3em;
+	background: linear-gradient(currentColor 0 0) left bottom / 0 1px no-repeat;
+	transition:
+		background-size 0.35s ease,
+		color 0.2s;
+}
+
+:root .menu-largo a[aria-current] {
+	color: var(--texto);
+	background-size: 100% 1px;
+}
+
+/* Na abertura, o nome no menu ganha o mesmo fio dos itens. */
+:root .marca-nome {
+	align-self: flex-start;
+	padding-bottom: 0.1em;
+	background: linear-gradient(currentColor 0 0) left bottom / 0 1px no-repeat;
+	transition: background-size 0.35s ease;
+}
+
+:root .marca[aria-current] .marca-nome {
+	background-size: 100% 1px;
+}
+
+/* No menu em tela cheia, a seção atual fica entre dois fios escuros, como os botões do site, e os outros itens ficam
+   um tom mais claro. Nada muda de lugar: só a cor dos fios e do texto. */
+:root .menu-cheio:has(a[aria-current]) li a {
+	color: var(--texto-suave);
+}
+
+:root .menu-cheio li {
+	transition: border-color 0.3s ease;
+}
+
+:root .menu-cheio li a {
+	transition: color 0.3s ease;
+}
+
+:root .menu-cheio li:has(a[aria-current]),
+:root .menu-cheio li:has(+ li a[aria-current]) {
+	border-bottom-color: var(--texto);
+}
+
+:root .menu-cheio li:first-child:has(a[aria-current]) {
+	border-top-color: var(--texto);
+}
+
+:root .menu-cheio:has(a[aria-current]) li a[aria-current] {
+	color: var(--texto);
+	font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .menu-largo a,
+	:root .menu-cheio li,
+	:root .menu-cheio li a {
+		transition: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .cabecalho-whatsapp::before {
+		transition: none;
+	}
+}
+
+/* No celular, o ícone do WhatsApp e o número, no lugar de "Conversar"; "Conversar no WhatsApp" quando cabe. */
+:root .cabecalho-whatsapp-canal,
+:root .cabecalho-whatsapp-texto {
+	display: none;
+}
+
+:root .cabecalho-whatsapp-telefone {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.74rem;
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+}
+
+:root .cabecalho-whatsapp-icone {
+	flex: none;
+	width: 1rem;
+	height: 1rem;
+}
+
+/* Com o número, o botão fica mais justo, para o nome e o CRP seguirem numa linha a partir de 360 px. */
+@media (max-width: 39.99rem) {
+	:root .cabecalho-whatsapp {
+		padding-inline: 0.8rem;
+	}
+}
+
+@media (min-width: 40rem) {
+	:root .cabecalho-whatsapp-texto {
+		display: inline;
+	}
+
+	:root .cabecalho-whatsapp-telefone {
+		display: none;
+	}
+
+	:root .cabecalho-whatsapp {
+		min-width: 11rem;
+		padding-inline: 2rem;
+	}
+
+	:root .cabecalho-whatsapp-canal {
+		display: inline;
+		white-space: pre;
+	}
+}
+
+/* Com o menu aberto em linha, o texto inteiro só cabe a partir de uns 1300 px. */
+@media (min-width: 76rem) and (max-width: 83.99rem) {
+	:root .cabecalho-whatsapp-canal {
+		display: none;
+	}
+}
+
+:root :focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 3px;
+}
+
+/* Nos botões que enchem, o texto clareia no foco e levava o contorno junto: claro sobre o fundo claro, sem contraste.
+   O contorno fica na cor do texto em repouso: escuro em volta dos botões taupe e do rodapé, claro sobre a foto do
+   encerramento. Os dois WhatsApp do menu encostam na borda do cabeçalho: o contorno vai por dentro, claro sobre o
+   fundo escuro que entra. */
+:root :is(.botao, .link-seta):focus-visible {
+	outline-color: var(--botao-cor, var(--texto));
+}
+
+:root :is(.cabecalho-whatsapp, .menu-cheio-whatsapp):focus-visible {
+	outline: 2px solid #f7f6f2;
+	outline-offset: -6px;
+}
+
+/* Abertura */
+
+/* O texto da abertura começa na mesma linha das seções: na margem até a coluna de 70rem caber, e na coluna depois. */
+:root .abertura {
+	min-height: min(calc(100svh - 4.5rem), 44rem);
+	padding-inline: max(var(--margem), (100% - var(--largura)) / 2);
+}
+
+:root .abertura-arte::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(90deg, rgb(243 242 238 / 0.97) 0%, rgb(243 242 238 / 0.94) 48%, rgb(243 242 238 / 0.32) 74%, rgb(243 242 238 / 0) 100%),
+		linear-gradient(0deg, rgb(243 242 238 / 0.85), transparent 35%);
+}
+
+/* No tablet em pé (769 a 960 px), o fim das linhas do parágrafo cai sobre a samambaia, e o contraste caía para 2,1:1.
+   O véu claro vai mais longe para a direita; os 30% da direita, onde a samambaia aparece, continuam quase sem véu. */
+@media (min-width: 48.01rem) and (max-width: 60rem) {
+	:root .abertura-arte::after {
+		background:
+			linear-gradient(90deg, rgb(243 242 238 / 0.97) 0%, rgb(243 242 238 / 0.94) 62%, rgb(243 242 238 / 0.32) 84%, rgb(243 242 238 / 0) 100%),
+			linear-gradient(0deg, rgb(243 242 238 / 0.85), transparent 35%);
+	}
+}
+
+:root .abertura-ancora {
+	font-size: 0.75rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+/* Em duas linhas: numa linha só, o fim do título entra na samambaia, e o contraste cai para perto de 3:1. */
+
+:root .abertura-headline {
+	max-width: 14em;
+	font-size: clamp(2rem, 3.6vw, 3rem);
+	font-weight: 300;
+	text-wrap: balance;
+}
+
+:root .abertura-texto {
+	max-width: 34rem;
+	color: var(--texto);
+}
+
+:root .abertura [hidden] {
+	display: none !important;
+}
+
+/* O botão do WhatsApp na abertura, em teste: ligado ou desligado, e três desenhos. O de dois fios, o do resto do
+   site, saiu da troca. */
+
+:root .abertura-acoes .botao-conteudo {
+	display: inline-block;
+	transition: transform 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .abertura-acoes .botao-conteudo {
+		transition: none;
+	}
+}
+
+/* O "Conheça minha abordagem", em teste: ligado ou desligado, e os desenhos do WhatsApp. Fio embaixo (1) é o link
+   de sempre, sublinhado; Fio embaixo (2) é o fio com o fundo que entra; os outros repetem os do WhatsApp, sem o
+   ícone. */
+
+:root .abertura[data-link='cheio'] .abertura-acoes .link-discreto {
+	--botao-cheio: #72706d;
+	--botao-sobre: #f7f6f2;
+	position: relative;
+	isolation: isolate;
+	display: inline-block;
+	padding: 0.95rem 1.5rem;
+	background: none;
+	border: solid currentColor;
+	border-width: 1px 0;
+	color: var(--texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.2em;
+	line-height: 1.5;
+	text-align: center;
+	text-transform: uppercase;
+	transition:
+		color 0.3s ease,
+		background-size 0.35s ease;
+}
+
+:root .abertura[data-link='cheio'] .abertura-acoes .link-discreto::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--botao-cheio);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.3s ease;
+}
+
+:root .abertura[data-link='cheio'] .abertura-acoes .link-discreto:is(:hover, :focus-visible) {
+	color: var(--botao-sobre);
+}
+
+:root .abertura[data-link='cheio'] .abertura-acoes .link-discreto:is(:hover, :focus-visible)::before {
+	transform: scaleX(1);
+}
+
+:root .abertura[data-link='cheio'] .abertura-acoes .link-discreto {
+	--botao-cheio: #5f5d5a;
+	padding: 1.05rem 2rem;
+	border: 0;
+	background: #72706d;
+	color: #f7f6f2;
+	letter-spacing: 0.24em;
+}
+
+/* O ícone do WhatsApp antes do texto: escondido no Cheio, à mostra nos dois Fio embaixo e no Negrito. Pega a
+   cor do texto, inclusive no hover. */
+:root .abertura .botao-icone {
+	display: none;
+}
+
+/* "O caminho começa dentro", em teste: ligada ou desligada, e três desenhos para ela se ver melhor que a etiqueta
+   pequena no canto da foto. A da coluna é uma cópia dentro de cada versão, e só aparece no desenho dela. */
+
+/* A altura do bloco na abertura, em teste: embaixo (como está), no meio ou em cima. No celular a foto fica numa faixa
+   em cima e o bloco vem logo depois, então a troca some. */
+:root .abertura[data-altura='meio'] {
+	align-items: center;
+}
+
+/* Títulos: uma barrinha e o título, na mesma linha, em qualquer tela. Quando o título quebra, a segunda linha alinha
+   com a primeira, e não embaixo da barrinha, que fica sempre na altura da primeira linha. */
+
+:root .secao h2 {
+	display: grid;
+	grid-template-columns: 1.5rem 1fr;
+	column-gap: 0.85rem;
+	max-width: 28ch;
+	margin-bottom: 1.25rem;
+}
+
+:root .secao h2::before {
+	content: '';
+	height: 1px;
+	margin-top: 0.58em;
+	background: var(--acento);
+}
+
+/* Menos espaço entre as seções, a pedido dela: o de antes, de até 7rem em cima e embaixo, separava demais. */
+
+:root .secao {
+	padding-block: clamp(3rem, 6.5vw, 4.75rem);
+}
+
+/* A alternância entre as seções é o que marca cada uma. */
+
+:root .secao-quem,
+:root .secao-saberes-complementares {
+	background: var(--superficie);
+}
+
+/* A citação e o "O que nos adoece" numa faixa só, no #b8b688: a citação abre a seção. */
+
+:root .secao-o-que-nos-adoece {
+	padding-top: clamp(1.5rem, 3vw, 2.25rem);
+	background: var(--faixa-forte);
+	color: var(--sobre-faixa-forte);
+}
+
+:root .secao-o-que-nos-adoece h2::before {
+	background: var(--sobre-faixa-forte);
+}
+
+/* Título de um lado e texto do outro, como o "Kind words" da referência: sem foto, a metade direita ficava vazia. */
+@media (min-width: 60rem) {
+	:root .secao-o-que-nos-adoece .dentro {
+		display: grid;
+		grid-template-columns: 1fr 1.4fr;
+		column-gap: 3.5rem;
+		align-items: start;
+	}
+
+	:root .secao-o-que-nos-adoece h2 {
+		margin-bottom: 0;
+	}
+
+	:root .secao-o-que-nos-adoece .corpo {
+		max-width: none;
+	}
+}
+
+/* Cards: o layout do A, com os ícones desenhados. Uma coluna no celular, 2×2 até 62rem e quatro depois, nunca 3+1.
+   Com subgrid, o ícone, o título e o texto dos quatro dividem as mesmas linhas: o título da TCC, em duas linhas, não
+   empurra o texto dele para baixo do texto dos outros. */
+
+:root .cards {
+	grid-template-columns: 1fr;
+	gap: 2.5rem 1.25rem;
+}
+
+@media (min-width: 36rem) {
+	:root .cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	:root .card {
+		display: grid;
+		grid-row: span 3;
+		grid-template-rows: subgrid;
+		row-gap: 0;
+		align-content: start;
+	}
+}
+
+@media (min-width: 62rem) {
+	:root .cards {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+:root .card {
+	padding: 1.25rem 0 0;
+	background: none;
+	border: 0;
+	border-top: 1px solid var(--texto);
+	border-radius: 0;
+}
+
+:root .icone {
+	width: 3.5rem;
+	height: 3.5rem;
+	margin-left: -0.35rem;
+}
+
+/* Quem te escuta: a foto e a apresentação em cima; a formação e a trajetória fechadas, cada uma no seu clique. */
+
+:root .quem {
+	gap: 2rem;
+}
+
+:root .quem-foto {
+	filter: saturate(0.85);
+}
+
+:root .quem-texto .botao {
+	margin-top: 0.75rem;
+}
+
+:root .quem-aba {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	width: 100%;
+	padding: 1.05rem 0;
+	background: none;
+	border: solid var(--linha);
+	border-width: 1px 0;
+	color: var(--texto);
+	cursor: pointer;
+	font-family: var(--fonte-texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.5;
+	text-align: left;
+	text-transform: uppercase;
+	transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+	:root .quem-aba:hover {
+		border-bottom-color: var(--texto);
+	}
+}
+
+:root .quem-aba ~ .quem-aba {
+	margin-top: -1px;
+}
+
+/* O + são dois fios: aberto, sobra um. */
+
+:root .quem-aba::after {
+	content: '';
+	flex: none;
+	width: 0.7rem;
+	height: 0.7rem;
+	background:
+		linear-gradient(var(--acento) 0 0) center / 100% 1px no-repeat,
+		linear-gradient(var(--acento) 0 0) center / 1px 100% no-repeat;
+	transition: background-size 0.3s ease;
+}
+
+:root .quem-aba[aria-expanded='true'] {
+	border-bottom-color: var(--texto);
+}
+
+:root .quem-aba[aria-expanded='true']::after {
+	background-size:
+		100% 1px,
+		0 0;
+}
+
+/* Ao abrir, o texto cresce de cima para baixo e aparece aos poucos, para ficar claro que o clique pôs coisa na tela;
+   ao fechar, faz o caminho de volta. Onde o navegador não anima a altura até o auto, só aparece, como antes. */
+:root .quem-painel {
+	padding: 1.25rem 0 1.75rem;
+	overflow: clip;
+	interpolate-size: allow-keywords;
+	transition:
+		height 0.5s ease,
+		padding 0.5s ease,
+		opacity 0.4s ease,
+		display 0.5s allow-discrete;
+}
+
+:root .quem-painel[hidden] {
+	display: none;
+	height: 0;
+	padding-block: 0;
+	opacity: 0;
+}
+
+@starting-style {
+	:root .quem-painel:not([hidden]) {
+		height: 0;
+		padding-block: 0;
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .quem-painel,
+	:root .quem-aba::after {
+		transition: none;
+	}
+}
+
+/* Formação: o desenho dos cards da Abordagem, com o fio em cima, e dois níveis de texto. */
+
+:root .quem-blocos {
+	display: grid;
+	gap: 1.25rem;
+	margin: 0;
+	list-style: none;
+}
+
+:root .quem-blocos li {
+	display: grid;
+	align-content: start;
+	gap: 0.2rem;
+	padding-top: 0.85rem;
+	border-top: 1px solid var(--texto);
+}
+
+:root .quem-blocos li:first-child {
+	padding-top: 0;
+	border-top: 0;
+}
+
+:root .quem-bloco-curso {
+	font-family: var(--fonte-titulo);
+	font-size: 1.1rem;
+	line-height: 1.35;
+}
+
+:root .quem-bloco-lugar {
+	font-size: 0.88rem;
+	line-height: 1.45;
+	color: var(--texto-suave);
+}
+
+:root .quem-colunas {
+	max-width: none;
+	font-size: 0.97em;
+}
+
+/* Três itens desde a saída da ULBRA (04/11): três colunas a partir de 40rem, para nenhum ficar sozinho numa linha. */
+@media (min-width: 40rem) {
+	:root .quem-blocos {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	:root .quem-blocos li:first-child {
+		padding-top: 0.85rem;
+		border-top: 1px solid var(--texto);
+	}
+
+	:root .quem-colunas {
+		column-count: 2;
+		column-gap: 2.75rem;
+	}
+
+	:root .quem-colunas p {
+		break-inside: avoid;
+	}
+}
+
+/* A trajetória em blocos: cada um com o seu rótulo e o fio em cima, como os cards. A primeira frase dela abre em
+   destaque, e os estudos de interesse viram lista, para quem bate o olho. */
+
+/* Uma coluna só, na ordem em que ela escreveu: duas colunas lado a lado não diziam por qual começar. */
+:root .quem-trajetoria {
+	display: grid;
+	gap: 1.75rem;
+	max-width: none;
+	margin-top: 0;
+	border-top: 0;
+}
+
+:root .quem-trecho {
+	padding-top: 0.9rem;
+	border-top: 1px solid var(--texto);
+}
+
+:root .quem-trecho h3 {
+	margin-bottom: 0.85rem;
+	font-family: var(--fonte-texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.5;
+	text-transform: uppercase;
+	color: var(--acento);
+}
+
+:root .quem-trecho p {
+	margin: 0 0 0.9rem;
+	line-height: 1.65;
+}
+
+:root .quem-trecho:first-child p:first-of-type {
+	font-family: var(--fonte-titulo);
+	font-size: 1.3em;
+	line-height: 1.4;
+}
+
+:root .quem-trecho ul {
+	display: grid;
+	gap: 0.55rem;
+	margin: 0 0 0.9rem;
+	padding: 0;
+	list-style: none;
+}
+
+:root .quem-trecho li {
+	display: grid;
+	grid-template-columns: 0.9rem 1fr;
+	gap: 0.5rem;
+	font-family: var(--fonte-titulo);
+	font-size: 1.08rem;
+	line-height: 1.4;
+}
+
+:root .quem-trecho li::before {
+	content: '';
+	height: 1px;
+	margin-top: 0.7em;
+	background: var(--acento);
+}
+
+:root .quem-trecho a {
+	color: inherit;
+	text-underline-offset: 0.25em;
+}
+
+/* No celular o texto abre logo abaixo da aba: o fio de cima do primeiro bloco ficava colado no fio dela. */
+@media (max-width: 51.99rem) {
+	:root .quem-trecho:first-child {
+		padding-top: 0;
+		border-top: 0;
+	}
+}
+
+/* No computador, o rótulo de cada parte fica à esquerda, na coluna da foto, e o texto na coluna da apresentação. */
+@media (min-width: 52rem) {
+	:root .quem-trecho {
+		display: grid;
+		grid-template-columns: 16rem minmax(0, 40rem);
+		column-gap: 4rem;
+		align-items: start;
+	}
+
+	:root .quem-trecho > * {
+		grid-column: 2;
+	}
+
+	:root .quem-trecho h3 {
+		grid-column: 1;
+		grid-row: 1 / span 10;
+		margin: 0.2rem 0 0;
+	}
+}
+
+/* No computador os botões ficam lado a lado, ao pé da foto, e o texto abre embaixo dela, na largura toda. */
+
+@media (min-width: 52rem) {
+	:root .quem {
+		grid-template-columns: 16rem 4rem 1fr 1.25rem 1fr;
+		grid-template-rows: 1fr auto;
+		gap: 0;
+	}
+
+	:root .quem-retrato {
+		grid-column: 1;
+		grid-row: 1 / span 2;
+	}
+
+	:root .quem-texto {
+		grid-column: 3 / -1;
+		grid-row: 1;
+		padding-bottom: 1.5rem;
+	}
+
+	:root .quem-abas {
+		display: contents;
+	}
+
+	:root .quem-aba {
+		grid-column: 3;
+		grid-row: 2;
+		align-self: stretch;
+	}
+
+	:root .quem-aba ~ .quem-aba {
+		grid-column: 5;
+		margin-top: 0;
+	}
+
+	:root .quem-painel {
+		grid-column: 1 / -1;
+		padding: 2.5rem 0 0;
+	}
+}
+
+@media (min-width: 64rem) {
+	:root .quem-colunas {
+		column-count: 3;
+	}
+}
+
+/* Perguntas frequentes: o comportamento das abas do "Quem te escuta". O fio de baixo escurece no hover; aberta, a
+   pergunta ganha o fio escuro embaixo dela, o + de dois fios vira − e a resposta cresce e aparece aos poucos. */
+
+/* O bloco todo (título, texto e lista) é uma coluna da largura da lista, no meio da página: sobra o mesmo espaço dos
+   dois lados. Quando a tela é mais estreita que a coluna, ela ocupa o espaço entre as margens, alinhada à esquerda. */
+:root .secao-perguntas .dentro {
+	width: min(100% - 2 * var(--margem), 44rem);
+}
+
+:root .perguntas-lista {
+	max-width: none;
+	border-top-color: var(--linha);
+}
+
+:root .pergunta {
+	border-bottom: 1px solid var(--linha);
+	transition: border-color 0.2s;
+	interpolate-size: allow-keywords;
+}
+
+:root .pergunta summary {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	padding: 1.05rem 0;
+	border-bottom: 1px solid transparent;
+	color: var(--texto);
+	transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+	:root .pergunta:not([open]):hover {
+		border-bottom-color: var(--texto);
+	}
+}
+
+:root .pergunta[open] summary {
+	border-bottom-color: var(--texto);
+}
+
+:root .pergunta summary::after,
+:root .pergunta[open] summary::after {
+	content: '';
+	position: static;
+	flex: none;
+	width: 0.7rem;
+	height: 0.7rem;
+	background:
+		linear-gradient(var(--acento) 0 0) center / 100% 1px no-repeat,
+		linear-gradient(var(--acento) 0 0) center / 1px 100% no-repeat;
+	transition: background-size 0.3s ease;
+}
+
+:root .pergunta[open] summary::after {
+	background-size:
+		100% 1px,
+		0 0;
+}
+
+:root .pergunta .corpo {
+	padding: 1rem 0 1.25rem;
+}
+
+/* A resposta cresce ao abrir e encolhe ao fechar. Onde o navegador não anima o conteúdo do details, só aparece. */
+:root .pergunta::details-content {
+	height: 0;
+	opacity: 0;
+	overflow: clip;
+	transition:
+		height 0.45s ease,
+		opacity 0.35s ease,
+		content-visibility 0.45s allow-discrete;
+}
+
+:root .pergunta[open]::details-content {
+	height: auto;
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root .pergunta::details-content,
+	:root .pergunta summary::after {
+		transition: none;
+	}
+}
+
+/* Faixa da citação */
+
+:root .faixa-citacao {
+	margin: 0;
+	padding: clamp(3.25rem, 6.5vw, 4.75rem) var(--margem) 0;
+	background: var(--faixa-forte);
+	color: var(--sobre-faixa-forte);
+	text-align: center;
+}
+
+/* Um fio curto fecha a citação e separa dela o texto da seção. */
+:root .faixa-citacao::after {
+	content: '';
+	display: block;
+	width: 3rem;
+	height: 1px;
+	margin: clamp(2.25rem, 5vw, 3.25rem) auto 0;
+	background: currentColor;
+	opacity: 0.6;
+}
+
+/* Menor e em negrito, como a Carol pediu no áudio de 04/11 15:20: "a frase pode ser menor, pode ficar em negrito". */
+:root .faixa-citacao blockquote {
+	max-width: 40rem;
+	margin: 0 auto;
+	font-family: var(--fonte-titulo);
+	font-size: clamp(1.12rem, 1.9vw, 1.4rem);
+	font-style: italic;
+	font-weight: 500;
+	line-height: 1.45;
+	text-wrap: balance;
+}
+
+:root .faixa-citacao figcaption {
+	margin-top: 1.25rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+}
+
+/* Encerramento: a imagem mais visível, tingida pelo tom novo, com o texto claro em cima. */
+
+:root .convite {
+	padding-block: clamp(6rem, 13vw, 9.5rem);
+	color: #fbfaf7;
+}
+
+:root .convite-arte {
+	isolation: isolate;
+}
+
+/* Mais escuro e com a foto mais visível: sai o tingido do tom das faixas, que achatava a folha, e entra um véu de
+   oliva escuro, o do rodapé escurecido, mais denso só atrás do texto. A folha fica nítida nas bordas. */
+:root .convite-arte::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(ellipse 48rem 22rem at 50% 50%, rgb(30 32 22 / 0.62), rgb(30 32 22 / 0.3) 75%),
+		rgb(56 56 36 / 0.18);
+}
+
+:root .convite .corpo {
+	font-weight: 300;
+	font-style: italic;
+	text-shadow: 0 1px 12px rgb(20 22 14 / 0.45);
+}
+
+:root .convite-ancora {
+	margin: 0 0 1.25rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+}
+
+:root .convite .botao {
+	--botao-cheio: #fbfaf7;
+	--botao-sobre: #23261f;
+	--botao-cor: #fbfaf7;
+}
+
+/* Rodapé: o mesmo tom forte, em três colunas, como o do MyEverRoot: a navegação, o nome no centro e o contato. */
+
+:root .rodape-colunas {
+	padding: clamp(3rem, 6vw, 4.5rem) 0 8rem;
+	background: var(--faixa-forte);
+	border-top: 0;
+	color: var(--sobre-faixa-forte);
+}
+
+:root .rodape-colunas .rodape-nome,
+:root .rodape-colunas .rodape-registro,
+:root .rodape-colunas .rodape-link {
+	color: var(--sobre-faixa-forte);
+}
+
+:root .rodape-grade {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2.5rem;
+}
+
+:root .rodape-grade p {
+	margin: 0;
+}
+
+/* "Navegação" e "Contato" um pouco menores, a pedido da Carol (04/11 16:17): eram 1,35–1,7rem. */
+:root .rodape-titulo {
+	margin-bottom: 1rem !important;
+	font-family: var(--fonte-titulo);
+	font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+	font-weight: 300;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+:root .rodape-navegacao ul {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, max-content));
+	gap: 0.6rem 1.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+:root .rodape-navegacao .rodape-link {
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-decoration: none;
+	text-transform: uppercase;
+	background: linear-gradient(currentColor 0 0) left bottom / 0 1px no-repeat;
+	padding-bottom: 0.2em;
+	transition: background-size 0.3s ease;
+}
+
+:root .rodape-navegacao .rodape-link:hover {
+	background-size: 100% 1px;
+}
+
+:root .rodape-marca {
+	display: grid;
+	justify-items: center;
+	align-content: start;
+	gap: 0.4rem;
+	text-align: center;
+}
+
+:root .rodape-selo {
+	width: 5.5rem;
+	height: 5.5rem;
+	margin-bottom: 0.6rem;
+	padding: 1.1rem;
+	border-radius: 50%;
+	background: var(--superficie);
+	color: var(--texto);
+}
+
+:root .rodape-colunas .rodape-nome {
+	font-size: 1.5rem;
+	font-weight: 300;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+:root .rodape-colunas .rodape-registro {
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+}
+
+:root .rodape-contato {
+	display: grid;
+	justify-items: start;
+	align-content: start;
+	gap: 1rem;
+}
+
+:root .rodape-colunas .botao {
+	--botao-cheio: var(--sobre-faixa-forte);
+	--botao-sobre: var(--faixa-forte);
+	--botao-cor: var(--sobre-faixa-forte);
+	min-width: 13rem;
+	padding-block: 0.85rem;
+}
+
+:root .rodape-email {
+	overflow-wrap: anywhere;
+	font-size: 0.85rem;
+}
+
+:root .rodape-colunas .rodape-aviso {
+	max-width: none;
+	margin: clamp(2.5rem, 5vw, 3.5rem) 0 0.75rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+}
+
+:root .rodape-colunas .rodape-pe {
+	margin: 0;
+	color: var(--sobre-faixa-forte);
+}
+
+@media (min-width: 52rem) {
+	:root .rodape-grade {
+		grid-template-columns: 1fr auto 1fr;
+		align-items: start;
+		gap: 3rem;
+	}
+
+	:root .rodape-contato {
+		justify-items: end;
+		text-align: right;
+	}
+}
+
+/* Páginas de aprofundamento */
+
+:root .pagina-nova {
+	padding-bottom: clamp(4rem, 8vw, 6rem);
+}
+
+:root .pagina-nova > .dentro:first-child {
+	padding-top: clamp(1.75rem, 4vw, 2.75rem);
+}
+
+:root .pagina-nova h1 {
+	font-size: clamp(2.1rem, 4.4vw, 3.2rem);
+	font-weight: 300;
+	letter-spacing: -0.01em;
+}
+
+/* O quadro, do "Session Options": título e blocos de um lado, foto em pé do outro. */
+
+:root .quadro {
+	display: grid;
+	margin-top: 1.5rem;
+	background: var(--superficie);
+}
+
+:root .quadro-texto {
+	padding: clamp(1.75rem, 5vw, 3.75rem) clamp(1.25rem, 4.5vw, 3.5rem);
+}
+
+:root .quadro-arte .arte {
+	width: 100%;
+	height: 100%;
+	max-height: 26rem;
+	object-fit: cover;
+}
+
+:root .quadro-partes {
+	display: grid;
+	gap: 2rem 2.5rem;
+	margin-top: clamp(1.75rem, 4vw, 2.75rem);
+}
+
+:root .quadro-parte h2 {
+	padding-bottom: 0.55rem;
+	border-bottom: 1px solid var(--texto);
+	font-family: var(--fonte-texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.5;
+	text-transform: uppercase;
+}
+
+/* O texto dela é mais longo que o do Session Options: a fonte de título, sem itálico, para ler com calma. */
+:root .quadro-parte p {
+	margin: 0.8rem 0 0;
+	font-family: var(--fonte-titulo);
+	font-size: 1.06rem;
+	line-height: 1.6;
+}
+
+:root .quadro-parte p + p {
+	margin-top: 0.7rem;
+}
+
+@media (min-width: 62rem) {
+	:root .quadro {
+		grid-template-columns: 1.55fr 1fr;
+	}
+
+	:root .quadro-arte {
+		position: relative;
+	}
+
+	:root .quadro-arte .arte {
+		position: absolute;
+		inset: 0;
+		max-height: none;
+	}
+
+	:root .quadro-partes {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+/* Na Saúde da mulher, as quatro partes são parágrafos inteiros, não as duas linhas do Session Options: no 2×2 a coluna
+   ficava com uns 34 caracteres e cada linha da grade deixava um buraco embaixo da parte mais curta. Uma coluna só, na
+   ordem dela, com uns 70 caracteres, e a foto acompanha a rolagem na altura da tela em vez de esticar com o texto. */
+:root .pagina-saude .quadro-partes {
+	max-width: 36rem;
+	row-gap: 2.25rem;
+}
+
+@media (min-width: 62rem) {
+	:root .pagina-saude .quadro-partes {
+		grid-template-columns: 1fr;
+	}
+
+	:root .pagina-saude .quadro-arte .arte {
+		position: sticky;
+		top: 3.9rem;
+		inset: auto;
+		height: calc(100svh - 3.9rem);
+	}
+}
+
+/* O fio com os lugares que ela enumera: deitado no computador, em pé no celular. */
+
+:root .fio {
+	display: block;
+	stroke-width: 1;
+	color: var(--acento);
+}
+
+:root .ritmo {
+	margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+:root .fio-deitado {
+	width: 100%;
+	height: 6.5rem;
+}
+
+:root .fio-em-pe {
+	display: none;
+}
+
+:root .ritmo-lugares {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	margin: 0.75rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--texto-suave);
+}
+
+@media (max-width: 40rem) {
+	:root .ritmo {
+		display: grid;
+		grid-template-columns: 4.5rem 1fr;
+		gap: 1.25rem;
+		height: 24rem;
+	}
+
+	:root .fio-deitado {
+		display: none;
+	}
+
+	:root .fio-em-pe {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	:root .ritmo-lugares {
+		grid-template-columns: none;
+		grid-template-rows: repeat(4, 1fr);
+		align-items: center;
+		margin: 0;
+	}
+}
+
+:root .pagina-fecho {
+	margin-top: clamp(3rem, 7vw, 5rem);
+	text-align: center;
+}
+
+/* Menor nas duas páginas, a pedido da Carol (04/11 17:45 e 18:19): era 1,25–1,6rem, quase um título. */
+:root .pagina-fecho .corpo {
+	max-width: 40rem;
+	margin: 0 auto 2.25rem;
+	font-family: var(--fonte-titulo);
+	font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+	line-height: 1.45;
+	text-wrap: balance;
+}
+
+/* Saberes */
+
+/* Sem rótulo, o título vinha a 2 px do "Voltar para o início". */
+:root .pagina-saberes .voltar + h1 {
+	margin-top: 1.5rem;
+}
+
+:root .pagina-rotulo {
+	margin: 2rem 0 0.75rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--texto-suave);
+}
+
+:root .pagina-abertura {
+	max-width: 38rem;
+	margin: 1.25rem 0 0;
+	font-size: 1.08em;
+}
+
+/* A lista de "Formações complementares". */
+
+:root .quem-formacao {
+	margin: 0;
+	padding: 0 0 1rem;
+	list-style: none;
+}
+
+:root .quem-formacao li {
+	display: grid;
+	gap: 0.1rem;
+	padding: 0.7rem 0;
+	border-top: 1px solid var(--linha);
+}
+
+:root .quem-formacao li:first-child {
+	border-top: 0;
+}
+
+:root .quem-formacao-nome {
+	font-family: var(--fonte-titulo);
+	font-size: 1.1rem;
+	line-height: 1.35;
+}
+
+:root .quem-formacao-lugar {
+	font-size: 0.88rem;
+	line-height: 1.45;
+	color: var(--texto-suave);
+}
+
+/* O encontro: a alquimia com uma imagem larga embaixo, no lugar do fio (pedido dela em 04/11). */
+
+:root .encontro {
+	margin-top: clamp(2.5rem, 6vw, 4rem);
+	padding: clamp(3rem, 7vw, 4.5rem) 0 clamp(1.75rem, 4vw, 2.5rem);
+	background: var(--superficie);
+}
+
+:root .encontro-frase {
+	max-width: 46rem;
+	margin: 0 auto clamp(2rem, 5vw, 3rem);
+	font-family: var(--fonte-titulo);
+	font-size: clamp(1.25rem, 2.3vw, 1.6rem);
+	font-style: italic;
+	line-height: 1.45;
+	text-align: center;
+	text-wrap: pretty;
+}
+
+/* No celular a faixa fica 16:9, porque em 21:9 sobraria uma tira fina. */
+:root .arte-pagina-saberes-encontro {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	object-position: center 60%;
+}
+
+@media (min-width: 40rem) {
+	:root .arte-pagina-saberes-encontro {
+		aspect-ratio: 21 / 9;
+	}
+}
+
+/* O texto dela, na ordem dela, com rótulos à margem para quem bate o olho. */
+
+/* Os trechos começam na mesma margem do título e do quadro das formações, e o texto fica na medida do resto do site. */
+:root .trechos {
+	margin-top: clamp(3rem, 7vw, 4.5rem);
+}
+
+:root .trecho {
+	display: grid;
+	gap: 0.5rem 2.5rem;
+	padding: 1.5rem 0;
+	border-top: 1px solid var(--linha);
+}
+
+:root .trecho h2 {
+	padding-top: 0.2rem;
+	font-family: var(--fonte-texto);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.6;
+	text-transform: uppercase;
+	color: var(--acento);
+}
+
+:root .trecho p {
+	margin: 0;
+}
+
+:root .trecho p + p {
+	margin-top: 0.9rem;
+}
+
+@media (min-width: 48rem) {
+	:root .trecho {
+		grid-template-columns: 11rem minmax(0, 36rem);
+	}
+}
+
+@media (min-width: 52rem) {
+	:root .trecho {
+		grid-template-columns: 16rem minmax(0, 36rem);
+		column-gap: 4rem;
+	}
+}
+
+:root .quadro-formacoes {
+	margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+:root .quadro-formacoes h2 {
+	margin-bottom: 1.25rem;
+	font-size: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+@media (min-width: 62rem) {
+	:root .quadro-formacoes {
+		grid-template-columns: 1fr 1.25fr;
+	}
+}
+
+/* No celular a foto fica numa faixa em cima, e o texto, no fundo claro. A altura da faixa cede para o botão caber na
+   primeira tela, mesmo no iPhone SE com as barras do Safari, onde sobram 553 px. */
+@media (max-width: 48rem) {
+	:root .abertura {
+		--altura-foto: clamp(4.5rem, 100svh - 30rem, 11rem);
+		min-height: 0;
+		padding-top: calc(var(--altura-foto) + 1.25rem);
+		padding-bottom: 3rem;
+	}
+
+	:root .abertura-arte {
+		bottom: auto;
+		height: var(--altura-foto);
+	}
+
+	:root .abertura-arte .arte {
+		object-position: 70% 35%;
+	}
+
+	:root .abertura-arte::after {
+		background: linear-gradient(0deg, var(--fundo), transparent 60%);
+	}
+
+	:root .abertura-ancora {
+		margin-bottom: 0.6rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.02em;
+		text-transform: none;
+	}
+
+	:root .abertura-headline {
+		margin-bottom: 0.9rem;
+	}
+
+	:root .abertura-texto {
+		font-size: 1em;
+		line-height: 1.6;
+	}
+
+	:root .abertura-acoes {
+		margin-top: 1.25rem;
+	}
+}
+
+/* "O caminho começa dentro" no título, menor que o título antigo: a Carol pediu a frase "não tão grande"
+   (áudio de 04/11 16:35). */
+
+:root .abertura .abertura-headline {
+	font-size: clamp(1.75rem, 2.9vw, 2.4rem);
+}
+
+/* A citação e o "O que nos adoece" no taupe do botão "Conversar no WhatsApp" do menu, com o texto claro (4,8:1),
+   no lugar do verde-oliva. As variáveis mudam só nos dois blocos, para o rodapé seguir com as dele. */
+:root :is(.faixa-citacao, .secao-o-que-nos-adoece) {
+	--faixa-forte: #72706d;
+	--sobre-faixa-forte: #fbfaf7;
+}
+
+/* O rodapé também no taupe do botão do WhatsApp do menu, com o texto claro (4,8:1). */
+:root .rodape-colunas {
+	--faixa-forte: #72706d;
+	--sobre-faixa-forte: #fbfaf7;
+}

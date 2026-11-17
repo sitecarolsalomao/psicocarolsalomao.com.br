@@ -1,6 +1,9 @@
 ---
-import '../styles/global.css';
+import '../styles/base.css';
+import '../styles/site.css';
+import { Font } from 'astro:assets';
 import { site } from '../data/site';
+import type { ItemDoMenu } from '../lib/menu';
 import Analytics from '../components/Analytics.astro';
 import Cabecalho from '../components/Cabecalho.astro';
 import DadosEstruturados from '../components/DadosEstruturados.astro';
@@ -9,12 +12,13 @@ import Rodape from '../components/Rodape.astro';
 interface Props {
 	titulo: string;
 	descricao: string;
-	// Caminho de uma imagem em public/ para a prévia do link (1200x630).
+	menu: ItemDoMenu[];
+	// Caminho de uma imagem em public/ para a prévia do link (1200x630). A padrão é a foto da Carol.
 	imagem?: string;
 	semIndice?: boolean;
 }
 
-const { titulo, descricao, imagem, semIndice = false } = Astro.props;
+const { titulo, descricao, menu, imagem = '/og.jpg', semIndice = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -27,6 +31,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		<meta name="description" content={descricao} />
 		{semIndice ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta name="theme-color" content="#f3f2ee" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="pt_BR" />
@@ -34,18 +40,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 		<meta property="og:title" content={titulo} />
 		<meta property="og:description" content={descricao} />
 		<meta property="og:url" content={canonical} />
-		{imagem && <meta property="og:image" content={new URL(imagem, Astro.site)} />}
-		<meta name="twitter:card" content={imagem ? 'summary_large_image' : 'summary'} />
+		<meta property="og:image" content={new URL(imagem, Astro.site)} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={`${site.nome}, ${site.profissao.toLowerCase()}, sorrindo, ao ar livre`} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<Font cssVariable="--fonte-newsreader" preload />
+		<Font cssVariable="--fonte-figtree" />
 		<DadosEstruturados />
 		<slot name="head" />
-		<Analytics />
 	</head>
 	<body>
 		<a class="pular" href="#conteudo">Pular para o conteúdo</a>
-		<Cabecalho />
+		<Cabecalho itens={menu} />
 		<main id="conteudo">
 			<slot />
 		</main>
-		<Rodape />
+		<Rodape menu={menu} />
+		{/* No fim do body: os scripts de medição procuram as seções da página quando rodam. */}
+		<Analytics />
 	</body>
 </html>

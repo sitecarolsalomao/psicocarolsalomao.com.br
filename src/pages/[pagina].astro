@@ -1,9 +1,12 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import BotaoWhatsapp from '../components/BotaoWhatsapp.astro';
 import { site } from '../data/site';
+import { menuDoSite } from '../lib/menu';
+import PaginaPartes from '../components/paginas/PaginaPartes.astro';
+import PaginaTexto from '../components/paginas/PaginaTexto.astro';
+import PaginaTrechos from '../components/paginas/PaginaTrechos.astro';
 
 export async function getStaticPaths() {
 	const paginas = await getCollection('paginas');
@@ -15,14 +18,17 @@ interface Props {
 }
 
 const { pagina } = Astro.props;
-const { Content } = await render(pagina);
+const menu = await menuDoSite(false);
 ---
 
-<Base titulo={`${pagina.data.titulo} · ${site.nome}`} descricao={pagina.data.descricao}>
-	<article class="pagina">
-		<a class="link-discreto" href="/">← Voltar para o início</a>
-		<h1>{pagina.data.titulo}</h1>
-		<div class="corpo"><Content /></div>
-		<BotaoWhatsapp>Conversar no WhatsApp</BotaoWhatsapp>
-	</article>
+<Base titulo={`${pagina.data.titulo} · ${site.nome}`} descricao={pagina.data.descricao} menu={menu}>
+	{
+		pagina.data.tipo === 'partes' ? (
+			<PaginaPartes pagina={pagina as never} />
+		) : pagina.data.tipo === 'trechos' ? (
+			<PaginaTrechos pagina={pagina as never} />
+		) : (
+			<PaginaTexto pagina={pagina} />
+		)
+	}
 </Base>

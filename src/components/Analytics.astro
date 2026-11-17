@@ -1,9 +1,154 @@
 ---
 import { site } from '../data/site';
 
-// Umami Cloud, plano grátis: sem cookies e sem dado pessoal, por isso sem banner.
-// A única conversão do site é o clique no WhatsApp, marcado com data-umami-event no BotaoWhatsapp.
+// Umami Cloud, plano grátis: sem cookies e sem dado pessoal, por isso sem banner. Além das visitas, mede:
+// - cliques: todo link, botão, aba e pergunta da FAQ vira um evento, com o lugar onde foi clicado. O WhatsApp continua
+//   no data-umami-event do BotaoWhatsapp, que o próprio Umami conta;
+// - rolagem: até onde a pessoa desceu na página (25, 50, 75 e 100%) e cada seção que chegou à altura dos olhos;
+// - tempo: quanto tempo a página ficou aberta e visível (10 s, 30 s, 1, 2 e 5 min);
+// - leitura: quanto tempo cada seção ficou na altura dos olhos, com a aba visível (5 s, 15 s, 30 s, 1 e 2 min, somando
+//   as voltas). Na inicial, as seções; nas páginas de "Ler mais", as partes marcadas com data-secao.
+// Sem o ID, nada é enviado. Com ?analytics=debug no endereço, os eventos aparecem no console, com ou sem o ID.
+// Só conta no domínio do site (data-domains): rodando no computador ou numa prévia, o script carrega e não envia nada.
 const id = site.umami;
 ---
 
-{id && <script defer src="https://cloud.umami.is/script.js" data-website-id={id} />}
+{/* Sem o # no endereço contado: o Umami conta como visita nova cada troca de endereço feita pelo history, e o menu troca
+   o # para #inicio quando a pessoa volta à abertura. */}
+{id && <script defer src="https://cloud.umami.is/script.js" data-website-id={id} data-domains={site.dominio} data-exclude-hash="true" />}
+
+<script>
+	(() => {
+		const debug = new URLSearchParams(location.search).get('analytics') === 'debug';
+		const fila = [];
+		const enviar = (nome, dados) => {
+			if (debug) console.log('[analytics]', nome, dados);
+			if (window.umami) window.umami.track(nome, dados);
+			else fila.push([nome, dados]);
+		};
+		// O script do Umami carrega com defer: o que acontecer antes dele espera aqui.
+		const esvaziar = setInterval(() => {
+			if (!window.umami) return;
+			clearInterval(esvaziar);
+			fila.splice(0).forEach(([nome, dados]) => window.umami.track(nome, dados));
+		}, 1000);
+		setTimeout(() => clearInterval(esvaziar), 30000);
+
+		const pagina = location.pathname;
+		const texto = (el) => (el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+		// O nome de cada seção: na inicial, o id (a citação e o texto do "O que nos adoece" contam juntos); nas páginas de
+		// "Ler mais", o data-secao de cada parte.
+		const secoes = [...document.querySelectorAll('main > section, main > figure, main [data-secao]')];
+		const nomeDa = (el) => el.dataset.secao || el.id.replace(/-texto$/, '') || el.className.split(' ').pop();
+		const lugar = (el) => {
+			// O menu em tela cheia fica dentro do cabeçalho: ele vem antes, para os dois WhatsApp do menu não saírem iguais.
+			if (el.closest('.menu-cheio')) return 'menu-cheio';
+			if (el.closest('.cabecalho')) return 'menu';
+			if (el.closest('.rodape')) return 'rodape';
+			const secao = el.closest('[data-secao], main > section, main > figure');
+			return secao ? nomeDa(secao) : el.closest('article')?.className.split(' ').pop() || 'pagina';
+		};
+
+		// O WhatsApp já é contado pelo Umami: aqui ele só ganha o lugar do clique.
+		document.querySelectorAll('[data-whatsapp]').forEach((el) => {
+			el.setAttribute('data-umami-event', 'whatsapp');
+			el.setAttribute('data-umami-event-lugar', lugar(el));
+		});
+
+		document.addEventListener(
+			'click',
+			(evento) => {
+				const el = evento.target.closest('a, button, summary, label');
+				if (!el) return;
+				if (el.hasAttribute('data-umami-event')) {
+					if (debug) console.log('[analytics]', el.getAttribute('data-umami-event'), { lugar: el.getAttribute('data-umami-event-lugar') });
+					return;
+				}
+				const dados = { pagina, lugar: lugar(el), alvo: texto(el) };
+				// O clique chega antes de o <details> trocar: aberto agora quer dizer que vai fechar. Na FAQ, só abrir conta.
+				if (el.matches('summary')) {
+					const abrindo = !el.parentElement.open;
+					if (el.closest('.pergunta')) return abrindo && enviar('pergunta', dados);
+					return enviar(abrindo ? 'abrir' : 'fechar', dados);
+				}
+				if (el.matches('button[aria-expanded]')) return enviar(el.getAttribute('aria-expanded') === 'true' ? 'fechar' : 'abrir', dados);
+				if (el.matches('a')) {
+					const href = el.getAttribute('href') || '';
+					return enviar(href.startsWith('mailto:') ? 'email' : href.includes('#') ? 'ancora' : 'link', { ...dados, destino: href });
+				}
+				enviar('clique', dados);
+			},
+			true,
+		);
+
+		// Rolagem: a maior profundidade, em marcos, uma vez cada.
+		const marcos = [25, 50, 75, 100];
+		const vistos = new Set();
+		const medirRolagem = () => {
+			const total = document.documentElement.scrollHeight - innerHeight;
+			const feito = total <= 0 ? 100 : Math.round((scrollY / total) * 100);
+			marcos.forEach((marco) => {
+				if (feito >= marco - 2 && !vistos.has(marco)) {
+					vistos.add(marco);
+					enviar('rolagem', { pagina, porcentagem: marco });
+				}
+			});
+		};
+		let agendado = false;
+		addEventListener(
+			'scroll',
+			() => {
+				if (agendado) return;
+				agendado = true;
+				requestAnimationFrame(() => {
+					agendado = false;
+					medirRolagem();
+				});
+			},
+			{ passive: true },
+		);
+
+		// Cada seção que chegou à altura dos olhos (a 40% da tela), uma vez cada. Com a linha no lugar da metade da seção à
+		// vista, as seções mais altas que duas telas também contam.
+		if ('IntersectionObserver' in window) {
+			const vistas = new Set();
+			const observador = new IntersectionObserver(
+				(entradas) =>
+					entradas.forEach((entrada) => {
+						if (!entrada.isIntersecting) return;
+						observador.unobserve(entrada.target);
+						const secao = nomeDa(entrada.target);
+						if (vistas.has(secao)) return;
+						vistas.add(secao);
+						enviar('secao-vista', { pagina, secao });
+					}),
+				{ rootMargin: '-40% 0px -60% 0px' },
+			);
+			secoes.forEach((el) => observador.observe(el));
+		}
+
+		// Leitura por seção: a cada segundo com a aba visível, cada seção que cruza a altura dos olhos (a 40% da tela, a
+		// mesma linha do menu) ganha um segundo.
+		const lidos = new Map();
+		const marcosLeitura = [5, 15, 30, 60, 120];
+
+		// Tempo com a página visível. Aba em segundo plano não conta.
+		const tempos = [10, 30, 60, 120, 300];
+		let visivel = 0;
+		setInterval(() => {
+			if (document.visibilityState !== 'visible') return;
+			visivel++;
+			if (tempos.includes(visivel)) enviar('tempo', { pagina, segundos: visivel });
+			const olhos = innerHeight * 0.4;
+			const lendo = secoes.filter((el) => {
+				const r = el.getBoundingClientRect();
+				return r.top <= olhos && r.bottom > olhos;
+			});
+			new Set(lendo.map(nomeDa)).forEach((secao) => {
+				const segundos = (lidos.get(secao) ?? 0) + 1;
+				lidos.set(secao, segundos);
+				if (marcosLeitura.includes(segundos)) enviar('leitura', { pagina, secao, segundos });
+			});
+		}, 1000);
+	})();
+</script>

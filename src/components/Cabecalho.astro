@@ -1,27 +1,207 @@
 ---
-import { getCollection } from 'astro:content';
-import { site } from '../data/site';
+import { site, telefoneWhatsapp } from '../data/site';
 import BotaoWhatsapp from './BotaoWhatsapp.astro';
-import { ancoraDe } from './secoes/ancora';
+import IconeWhatsapp from './IconeWhatsapp.astro';
 
-const secoes = (await getCollection('secoes')).sort((a, b) => a.id.localeCompare(b.id));
-const itens = secoes
-	.filter((s) => 'menu' in s.data && s.data.menu)
-	.map((s) => ({ rotulo: (s.data as { menu: string }).menu, href: `/#${ancoraDe(s.id)}` }));
+interface Props {
+	itens: { rotulo: string; href: string }[];
+}
+
+const { itens } = Astro.props;
+const rotuloWhatsapp = `Conversar no WhatsApp: ${telefoneWhatsapp}`;
 ---
 
 <header class="cabecalho">
-	<a class="marca" href="/">
+	{/* O nome leva ao início com a rolagem suave, como o "Início" do rodapé. */}
+	<a class="marca" href="/#inicio">
 		<span class="marca-nome">{site.nome}</span>
-		<span class="marca-registro">{site.profissao} · {site.crp}</span>
+		<span class="marca-registro"><span>{site.profissao} ·</span> <span>{site.crp}</span></span>
 	</a>
-	<nav aria-label="Seções">
-		<details class="menu">
+	<nav class="menu" aria-label="Seções">
+		<details class="menu-celular">
 			<summary>Menu</summary>
-			<ul>
-				{itens.map((item) => <li><a href={item.href}>{item.rotulo}</a></li>)}
-			</ul>
+			<div class="menu-cheio">
+				<div class="menu-cheio-topo">
+					<BotaoWhatsapp classe="menu-cheio-whatsapp" rotulo={rotuloWhatsapp}>
+						<span class="cabecalho-whatsapp-texto">Conversar no WhatsApp</span>
+						<span class="cabecalho-whatsapp-telefone">
+							<IconeWhatsapp classe="cabecalho-whatsapp-icone" />
+							{telefoneWhatsapp}
+						</span>
+					</BotaoWhatsapp>
+					<button class="menu-fechar" type="button">Fechar</button>
+				</div>
+				<div class="menu-cheio-lista">
+					<p class="menu-cheio-rotulo" id="menu-cheio-rotulo">Navegação</p>
+					<ul aria-labelledby="menu-cheio-rotulo">
+						{itens.map((item) => <li><a href={item.href}>{item.rotulo}</a></li>)}
+					</ul>
+				</div>
+			</div>
 		</details>
+		<ul class="menu-largo">
+			{itens.map((item) => <li><a href={item.href}>{item.rotulo}</a></li>)}
+		</ul>
 	</nav>
-	<BotaoWhatsapp classe="cabecalho-whatsapp">WhatsApp</BotaoWhatsapp>
+	<BotaoWhatsapp classe="cabecalho-whatsapp" rotulo={rotuloWhatsapp}>
+		<span class="cabecalho-whatsapp-texto">
+			Conversar<span class="cabecalho-whatsapp-canal"> no WhatsApp</span>
+		</span>
+		<span class="cabecalho-whatsapp-telefone">
+			<IconeWhatsapp classe="cabecalho-whatsapp-icone" />
+			{telefoneWhatsapp}
+		</span>
+	</BotaoWhatsapp>
 </header>
+
+<script>
+	// O menu em tela cheia: o foco entra no "Fechar" ao abrir, fica dentro do menu enquanto ele está aberto e volta ao
+	// "Menu" ao fechar, pelo botão ou pelo Esc. Tocar num item fecha o menu, que senão ficaria por cima da seção.
+	document.querySelectorAll('.menu-celular').forEach((menu) => {
+		const fechar = menu.querySelector('.menu-fechar');
+		const resumo = menu.querySelector('summary');
+		// O foco volta e vai sem rolar a página: o "Menu" fica no cabeçalho fixo, e o navegador rolava até a posição dele
+		// na página, tirando a pessoa do lugar.
+		const fecharMenu = () => {
+			menu.open = false;
+			resumo.focus({ preventScroll: true });
+		};
+		fechar.addEventListener('click', fecharMenu);
+		menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => (menu.open = false)));
+		menu.addEventListener('toggle', () => {
+			if (menu.open) fechar.focus({ preventScroll: true });
+		});
+		// Se a tela alarga com o menu aberto (o iPad girando, a janela maximizada), o menu em tela cheia some a partir
+		// de 76rem. Ele fecha junto, para o foco não ficar preso num menu invisível.
+		matchMedia('(min-width: 76rem)').addEventListener('change', (evento) => {
+			if (evento.matches && menu.open) menu.open = false;
+		});
+		document.addEventListener('keydown', (evento) => {
+			if (!menu.open) return;
+			if (evento.key === 'Escape') return fecharMenu();
+			if (evento.key !== 'Tab') return;
+			const focaveis = [...menu.querySelectorAll('.menu-cheio a, .menu-cheio button')];
+			const primeiro = focaveis[0];
+			const ultimo = focaveis[focaveis.length - 1];
+			if (evento.shiftKey && document.activeElement === primeiro) {
+				evento.preventDefault();
+				ultimo.focus();
+			} else if (!evento.shiftKey && document.activeElement === ultimo) {
+				evento.preventDefault();
+				primeiro.focus();
+			}
+		});
+	});
+</script>
+
+<script>
+	// A seção atual: o item do menu da seção que está na altura dos olhos (a 40% da tela) fica marcado, no computador e
+	// no menu em tela cheia; na abertura, o nome; depois das perguntas, nenhum. No clique, o item clicado já fica marcado
+	// e não pisca enquanto a página rola. Nas páginas de "Ler mais", o item da página fica marcado. O aviso no fim:
+	// abaixo das perguntas, um fio claro circula em volta do botão do WhatsApp do menu. E quando a pessoa volta rolando
+	// até a abertura, o endereço passa a terminar em #inicio, sem criar entrada no histórico. Roda depois de a página
+	// carregar, porque o cabeçalho vem antes das seções.
+	document.addEventListener('DOMContentLoaded', () => {
+		const raiz = document.documentElement;
+		const links = [...document.querySelectorAll('.menu-largo a, .menu-cheio a')];
+		const ancora = (link) => new URL(link.href).hash.slice(1);
+
+		// Nas páginas de "Ler mais", o item da página fica marcado, e clicar nele rola até o topo, sem recarregar.
+		const daPagina = links.filter((link) => !ancora(link) && new URL(link.href).pathname === location.pathname);
+		if (daPagina.length) {
+			daPagina.forEach((link) => {
+				link.setAttribute('aria-current', 'page');
+				link.addEventListener('click', (evento) => {
+					evento.preventDefault();
+					requestAnimationFrame(() => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+				});
+			});
+			return;
+		}
+
+		// A âncora de cada item e o trecho da página que ele cobre. O "O que nos adoece" vai da citação ao fim do texto.
+		const alvos = [...new Set(links.map(ancora))].flatMap((id) => {
+			const inicio = document.getElementById(id);
+			if (!inicio) return [];
+			const fim = document.getElementById(`${id}-texto`) ?? inicio;
+			return [{ id, inicio, fim }];
+		});
+		if (!alvos.length) return;
+		const ultimo = alvos[alvos.length - 1];
+		let atual = null;
+		// No clique, o item clicado fica preso até a seção chegar embaixo do menu (ou a página acabar), com um limite de
+		// 2 s. Não depende do fim da rolagem: quem clica com a página ainda rolando soltaria o item antes da hora.
+		let travado = null;
+		let destino = null;
+		const chegou = () => {
+			const topo = parseFloat(getComputedStyle(raiz).scrollPaddingTop) || 0;
+			const fimDaPagina = scrollY + innerHeight >= raiz.scrollHeight - 2;
+			return Math.abs(destino.inicio.getBoundingClientRect().top - topo) < 4 || fimDaPagina;
+		};
+		const soltar = () => {
+			clearTimeout(travado);
+			travado = null;
+			destino = null;
+		};
+		const marcar = (id) => {
+			if (id === atual) return;
+			atual = id;
+			links.forEach((link) => {
+				if (ancora(link) === id) link.setAttribute('aria-current', 'true');
+				else link.removeAttribute('aria-current');
+			});
+		};
+		const whatsapp = document.querySelector('.cabecalho-whatsapp');
+		const marca = document.querySelector('.marca');
+		const abertura = document.getElementById('inicio');
+		let rolou = false;
+		const medir = () => {
+			const olhos = innerHeight * 0.4;
+			// Abaixo das perguntas, um fio claro circula em volta do botão até a pessoa voltar para cima.
+			whatsapp?.classList.toggle('cabecalho-whatsapp-chamando', ultimo.fim.getBoundingClientRect().bottom < olhos);
+			if (travado) {
+				if (!chegou()) return;
+				soltar();
+			}
+			const dentro = alvos.find(({ inicio, fim }) => inicio.getBoundingClientRect().top <= olhos && fim.getBoundingClientRect().bottom > olhos);
+			marcar(dentro?.id ?? null);
+			// Na abertura, o nome no menu fica marcado, como os itens nas outras seções.
+			const naAbertura = Boolean(abertura) && abertura.getBoundingClientRect().bottom > olhos;
+			if (naAbertura) marca?.setAttribute('aria-current', 'true');
+			else marca?.removeAttribute('aria-current');
+			// Só depois da primeira rolagem: quem abre a página no topo continua com o endereço limpo.
+			if (rolou && naAbertura && location.hash !== '#inicio') {
+				history.replaceState(history.state, '', `${location.pathname}${location.search}#inicio`);
+			}
+		};
+		let pedido = false;
+		addEventListener(
+			'scroll',
+			() => {
+				rolou = true;
+				if (pedido) return;
+				pedido = true;
+				requestAnimationFrame(() => {
+					pedido = false;
+					medir();
+				});
+			},
+			{ passive: true },
+		);
+		addEventListener('resize', medir);
+		links.forEach((link) =>
+			link.addEventListener('click', () => {
+				const alvo = alvos.find((item) => item.id === ancora(link));
+				if (!alvo) return;
+				marcar(alvo.id);
+				clearTimeout(travado);
+				destino = alvo;
+				travado = setTimeout(() => {
+					soltar();
+					medir();
+				}, 2000);
+			}),
+		);
+		medir();
+	});
+</script>

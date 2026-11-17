@@ -1,0 +1,24 @@
+---
+// Uma página só de texto, para quando a Carol criar uma página nova: o título, o corpo do arquivo e o WhatsApp.
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+
+interface Props {
+	pagina: CollectionEntry<'paginas'>;
+}
+
+const { pagina } = Astro.props;
+const { Content } = await render(pagina);
+---
+
+<article class="pagina-nova pagina-texto">
+	<div class="dentro">
+		<a class="link-discreto voltar" href="/">Voltar para o início</a>
+		<h1>{pagina.data.titulo}</h1>
+		<div class="pagina-fecho">
+			<div class="corpo"><Content /></div>
+			<BotaoWhatsapp>Conversar no WhatsApp</BotaoWhatsapp>
+		</div>
+	</div>
+</article>

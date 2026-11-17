@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
-import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+import Foto from '../Foto.astro';
 
 interface Props {
 	secao: CollectionEntry<'secoes'> & { data: { tipo: 'abertura' } };
@@ -9,14 +9,26 @@ interface Props {
 
 const { secao } = Astro.props;
 const { Content } = await render(secao);
+const { ancora, headline, conhecaAbordagem, foto, fotoAlt } = secao.data;
 ---
 
-<section class="abertura">
-	<p class="abertura-ancora">{secao.data.ancora}</p>
-	<h1 class="abertura-headline">{secao.data.headline}</h1>
-	<div class="abertura-texto"><Content /></div>
-	<div class="abertura-acoes">
-		<BotaoWhatsapp>{secao.data.botao}</BotaoWhatsapp>
-		{secao.data.conhecaAbordagem && <a class="link-discreto" href="#abordagem">{secao.data.conhecaAbordagem}</a>}
+{/* data-link e data-altura guardam o que a Carol escolheu no painel do protótipo (04/11): o botão da abordagem cheio
+   e o texto no meio da altura da foto. O site.css desenha a abertura a partir deles. O WhatsApp não entra aqui, também
+   por escolha dela: ele fica no menu, sempre à vista. */}
+<section class="abertura" id="inicio" data-link="cheio" data-altura="meio">
+	<div class="abertura-arte">
+		<Foto src={foto} alt={fotoAlt} lugar="abertura" prioridade />
+	</div>
+	<div class="abertura-conteudo">
+		<p class="abertura-ancora">{ancora}</p>
+		<div class="abertura-versao">
+			<h1 class="abertura-headline">{headline}</h1>
+			<div class="abertura-texto"><Content /></div>
+		</div>
+		<div class="abertura-acoes">
+			<a class="link-discreto" href="#abordagem">
+				<span class="botao-conteudo">{conhecaAbordagem}</span>
+			</a>
+		</div>
 	</div>
 </section>

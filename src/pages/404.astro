@@ -1,12 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
+import { menuDoSite } from '../lib/menu';
+
+const menu = await menuDoSite(false);
 ---
 
-<Base titulo={`Página não encontrada · ${site.nome}`} descricao="Esta página não existe." semIndice>
-	<article class="pagina">
-		<h1>Esta página não existe</h1>
-		<p>O endereço pode ter mudado. O começo do site está a um clique.</p>
-		<a class="botao" href="/">Ir para o início</a>
+<Base titulo={`Página não encontrada · ${site.nome}`} descricao="Esta página não existe." menu={menu} semIndice>
+	<article class="pagina-nova pagina-texto">
+		<div class="dentro">
+			<h1>Esta página não existe</h1>
+			<div class="pagina-fecho">
+				<div class="corpo"><p>O endereço pode ter mudado. O começo do site está a um clique.</p></div>
+				<a class="botao" href="/">Ir para o início</a>
+			</div>
+		</div>
 	</article>
 </Base>

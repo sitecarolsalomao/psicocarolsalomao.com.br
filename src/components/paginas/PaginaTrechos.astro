@@ -1,0 +1,67 @@
+---
+// A página de Saberes: a alquimia com uma foto larga embaixo, o texto dela na ordem dela com rótulos à margem, e as
+// formações ao lado de outra foto.
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+import Foto from '../Foto.astro';
+import { comNegrito, paragrafos, separarFormacao } from '../../lib/texto';
+
+interface Props {
+	pagina: CollectionEntry<'paginas'> & { data: { tipo: 'trechos' } };
+}
+
+const { pagina } = Astro.props;
+const { Content } = await render(pagina);
+const { titulo, abertura, alquimia, fotoAlquimia, fotoAlquimiaAlt, trechos, formacoes, foto, fotoAlt } = pagina.data;
+---
+
+<article class="pagina-nova pagina-saberes">
+	<div class="dentro" data-secao="abertura">
+		<a class="link-discreto voltar" href="/">Voltar para o início</a>
+		<h1>{titulo}</h1>
+		{abertura && <p class="pagina-abertura">{abertura}</p>}
+	</div>
+	<div class="encontro" data-secao="alquimia">
+		<div class="dentro">
+			<blockquote class="encontro-frase" set:html={comNegrito(alquimia)} />
+			<Foto src={fotoAlquimia} alt={fotoAlquimiaAlt} lugar="pagina-saberes-encontro" />
+		</div>
+	</div>
+	<div class="dentro">
+		<div class="trechos">
+			{
+				trechos.map((trecho) => (
+					<section class="trecho" data-secao={trecho.titulo}>
+						<h2>{trecho.titulo}</h2>
+						<div class="trecho-texto">{paragrafos(trecho.texto).map((texto) => <p set:html={comNegrito(texto)} />)}</div>
+					</section>
+				))
+			}
+		</div>
+		{
+			formacoes.length > 0 && (
+				<div class="quadro quadro-formacoes" data-secao="formacoes">
+					<div class="quadro-arte"><Foto src={foto} alt={fotoAlt} lugar="pagina-saberes" /></div>
+					<div class="quadro-texto">
+						<h2>Formações complementares</h2>
+						<ul class="quem-formacao">
+							{
+								formacoes.map(separarFormacao).map(([nome, lugar]) => (
+									<li>
+										<span class="quem-formacao-nome">{nome}</span>
+										{lugar && <span class="quem-formacao-lugar">{lugar}</span>}
+									</li>
+								))
+							}
+						</ul>
+					</div>
+				</div>
+			)
+		}
+		<div class="pagina-fecho" data-secao="fecho">
+			{pagina.body && <div class="corpo"><Content /></div>}
+			<BotaoWhatsapp>Conversar no WhatsApp</BotaoWhatsapp>
+		</div>
+	</div>
+</article>

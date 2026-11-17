@@ -1,7 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
-import { ancoraDe } from './ancora';
+import { ancoraDe } from '../../lib/texto';
+import Foto from '../Foto.astro';
 
 interface Props {
 	secao: CollectionEntry<'secoes'> & { data: { tipo: 'aprofundamento' } };
@@ -9,10 +10,17 @@ interface Props {
 
 const { secao } = Astro.props;
 const { Content } = await render(secao);
+const { titulo, pagina, linkTexto, foto, fotoAlt } = secao.data;
+const ancora = ancoraDe(secao.id);
 ---
 
-<section class="secao" id={ancoraDe(secao.id)}>
-	{secao.data.titulo && <h2>{secao.data.titulo}</h2>}
-	<div class="corpo"><Content /></div>
-	<a class="link-seta" href={`/${secao.data.pagina.id}/`}>{secao.data.linkTexto}</a>
+<section class={`secao secao-aprofundamento secao-${ancora}`} id={ancora}>
+	<div class="dentro aprofundamento">
+		<div class="aprofundamento-texto">
+			{titulo && <h2>{titulo}</h2>}
+			<div class="corpo"><Content /></div>
+			<a class="link-seta" href={`/${pagina.id}/`}>{linkTexto}</a>
+		</div>
+		<div class="aprofundamento-arte"><Foto src={foto} alt={fotoAlt} lugar={ancora} /></div>
+	</div>
 </section>

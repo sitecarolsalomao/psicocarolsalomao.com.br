@@ -1,9 +1,10 @@
 ---
 tipo: abertura
-headline: Título da abertura, em definição
-ancora: Psicoterapia sistêmica com olhar integrativo online para mulheres
-botao: Conversar no WhatsApp
-conhecaAbordagem: Conheça a abordagem
+ancora: Psicoterapia sistêmica com olhar integrativo
+headline: O caminho começa dentro
+conhecaAbordagem: Conheça minha abordagem
+foto: ../../assets/fotos/abertura.jpg
+fotoAlt: Folhas de samambaia sobre um fundo claro e enevoado
 ---
 
-Texto complementar da abertura, em definição.
+Sinta-se à vontade para navegar e compreender o que impulsiona o meu trabalho. Acolho todas as pessoas que se reconhecem como mulheres e vivem nesse lugar social.

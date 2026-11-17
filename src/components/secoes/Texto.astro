@@ -1,7 +1,9 @@
 ---
+// A seção de texto, com a citação em faixa própria logo antes dela, quando houver. A âncora do menu fica na citação,
+// que é onde a seção começa para quem olha, e o texto ganha a sua, com "-texto".
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
-import { ancoraDe } from './ancora';
+import { ancoraDe } from '../../lib/texto';
 
 interface Props {
 	secao: CollectionEntry<'secoes'> & { data: { tipo: 'texto' } };
@@ -9,9 +11,21 @@ interface Props {
 
 const { secao } = Astro.props;
 const { Content } = await render(secao);
+const { titulo, citacao, citacaoAutora } = secao.data;
+const ancora = ancoraDe(secao.id);
 ---
 
-<section class="secao" id={ancoraDe(secao.id)}>
-	{secao.data.titulo && <h2>{secao.data.titulo}</h2>}
-	<div class="corpo"><Content /></div>
+{
+	citacao && (
+		<figure class="faixa-citacao" id={ancora}>
+			<blockquote>{citacao}</blockquote>
+			{citacaoAutora && <figcaption>{citacaoAutora}</figcaption>}
+		</figure>
+	)
+}
+<section class={`secao secao-${ancora}`} id={citacao ? `${ancora}-texto` : ancora}>
+	<div class="dentro">
+		{titulo && <h2>{titulo}</h2>}
+		<div class="corpo"><Content /></div>
+	</div>
 </section>

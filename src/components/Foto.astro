@@ -1,0 +1,26 @@
+---
+// As fotos das seções e das páginas. O arquivo e a descrição vêm do conteúdo ("foto" e "fotoAlt"); o "lugar" dá a classe
+// que o site.css usa para o recorte de cada uma.
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+	src: ImageMetadata;
+	alt: string;
+	lugar: string;
+	// A foto que aparece na primeira tela carrega antes das outras.
+	prioridade?: boolean;
+}
+
+const { src, alt, lugar, prioridade = false } = Astro.props;
+---
+
+<Image
+	class={`arte arte-${lugar}`}
+	src={src}
+	alt={alt}
+	widths={[480, 960]}
+	sizes="(min-width: 60rem) 60vw, 100vw"
+	loading={prioridade ? 'eager' : 'lazy'}
+	fetchpriority={prioridade ? 'high' : 'auto'}
+/>

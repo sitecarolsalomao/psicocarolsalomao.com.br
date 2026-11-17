@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
+import { menuDoSite } from '../lib/menu';
 import Abertura from '../components/secoes/Abertura.astro';
 import Abordagem from '../components/secoes/Abordagem.astro';
 import Aprofundamento from '../components/secoes/Aprofundamento.astro';
@@ -11,22 +12,29 @@ import QuemTeEscuta from '../components/secoes/QuemTeEscuta.astro';
 import Texto from '../components/secoes/Texto.astro';
 
 const secoes = (await getCollection('secoes')).sort((a, b) => a.id.localeCompare(b.id));
-const blocos = {
-	abertura: Abertura,
-	abordagem: Abordagem,
-	'quem-te-escuta': QuemTeEscuta,
-	texto: Texto,
-	aprofundamento: Aprofundamento,
-	perguntas: Perguntas,
-	convite: Convite,
-};
+const perguntas = (await getCollection('perguntas')).sort((a, b) => a.data.ordem - b.data.ordem);
+const menu = await menuDoSite(true);
 ---
 
-<Base titulo={`${site.nome} · ${site.profissao}`} descricao={site.descricao}>
+<Base titulo={`${site.nome} · ${site.profissao} online para mulheres`} descricao={site.descricao} menu={menu}>
 	{
 		secoes.map((secao) => {
-			const Bloco = blocos[secao.data.tipo];
-			return <Bloco secao={secao as never} />;
+			switch (secao.data.tipo) {
+				case 'abertura':
+					return <Abertura secao={secao as never} />;
+				case 'abordagem':
+					return <Abordagem secao={secao as never} />;
+				case 'quem-te-escuta':
+					return <QuemTeEscuta secao={secao as never} />;
+				case 'texto':
+					return <Texto secao={secao as never} />;
+				case 'aprofundamento':
+					return <Aprofundamento secao={secao as never} />;
+				case 'perguntas':
+					return <Perguntas secao={secao as never} perguntas={perguntas} />;
+				case 'convite':
+					return <Convite secao={secao as never} />;
+			}
 		})
 	}
 </Base>

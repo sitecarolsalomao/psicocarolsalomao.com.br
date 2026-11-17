@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
 import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+import Foto from '../Foto.astro';
 
 interface Props {
 	secao: CollectionEntry<'secoes'> & { data: { tipo: 'convite' } };
@@ -9,9 +10,14 @@ interface Props {
 
 const { secao } = Astro.props;
 const { Content } = await render(secao);
+const { ancora, botao, foto, fotoAlt } = secao.data;
 ---
 
 <section class="convite">
-	<div class="corpo"><Content /></div>
-	<BotaoWhatsapp>{secao.data.botao}</BotaoWhatsapp>
+	<div class="convite-arte"><Foto src={foto} alt={fotoAlt} lugar="convite" /></div>
+	<div class="convite-conteudo">
+		{ancora && <p class="convite-ancora">{ancora}</p>}
+		<div class="corpo"><Content /></div>
+		<BotaoWhatsapp>{botao}</BotaoWhatsapp>
+	</div>
 </section>

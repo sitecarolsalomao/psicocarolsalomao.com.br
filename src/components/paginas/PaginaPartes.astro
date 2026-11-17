@@ -1,0 +1,54 @@
+---
+// A página de Saúde: o texto dela, na ordem dela, em partes ao lado de uma foto, seguido do fio com os lugares que ela
+// enumera e do fecho, também dela.
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BotaoWhatsapp from '../BotaoWhatsapp.astro';
+import Fio from '../Fio.astro';
+import Foto from '../Foto.astro';
+import { comNegrito, paragrafos } from '../../lib/texto';
+
+interface Props {
+	pagina: CollectionEntry<'paginas'> & { data: { tipo: 'partes' } };
+}
+
+const { pagina } = Astro.props;
+const { Content } = await render(pagina);
+const { titulo, partes, lugares, foto, fotoAlt } = pagina.data;
+---
+
+<article class="pagina-nova pagina-saude">
+	<div class="dentro">
+		<a class="link-discreto voltar" href="/">Voltar para o início</a>
+		<div class="quadro">
+			<div class="quadro-texto">
+				<h1>{titulo}</h1>
+				<div class="quadro-partes">
+					{
+						partes.map((parte) => (
+							<section class="quadro-parte" data-secao={parte.titulo}>
+								<h2>{parte.titulo}</h2>
+								{paragrafos(parte.texto).map((texto) => <p set:html={comNegrito(texto)} />)}
+							</section>
+						))
+					}
+				</div>
+			</div>
+			<div class="quadro-arte"><Foto src={foto} alt={fotoAlt} lugar="pagina-saude" prioridade /></div>
+		</div>
+		{
+			lugares.length > 0 && (
+				<div class="ritmo" data-secao="lugares">
+					<Fio nome="ritmo" />
+					<ol class="ritmo-lugares">
+						{lugares.map((lugar) => <li>{lugar}</li>)}
+					</ol>
+				</div>
+			)
+		}
+		<div class="pagina-fecho" data-secao="fecho">
+			{pagina.body && <div class="corpo"><Content /></div>}
+			<BotaoWhatsapp>Conversar no WhatsApp</BotaoWhatsapp>
+		</div>
+	</div>
+</article>

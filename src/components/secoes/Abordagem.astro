@@ -1,8 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
-import Icone from '../Icone.astro';
-import { ancoraDe } from './ancora';
+import { ancoraDe } from '../../lib/texto';
+import Foto from '../Foto.astro';
+import IconeDesenhado from '../IconeDesenhado.astro';
 
 interface Props {
 	secao: CollectionEntry<'secoes'> & { data: { tipo: 'abordagem' } };
@@ -10,22 +11,28 @@ interface Props {
 
 const { secao } = Astro.props;
 const { Content } = await render(secao);
+const { titulo, cards, foto, fotoAlt } = secao.data;
 ---
 
-<section class="secao" id={ancoraDe(secao.id)}>
-	{secao.data.titulo && <h2>{secao.data.titulo}</h2>}
-	<div class="corpo"><Content /></div>
-	{
-		secao.data.cards.length > 0 && (
-			<ul class="cards">
-				{secao.data.cards.map((card) => (
+<section class="secao secao-abordagem" id={ancoraDe(secao.id)}>
+	<div class="dentro">
+		<div class="abordagem-topo">
+			<div>
+				{titulo && <h2>{titulo}</h2>}
+				<div class="corpo"><Content /></div>
+			</div>
+			<div class="abordagem-arte"><Foto src={foto} alt={fotoAlt} lugar="abordagem" /></div>
+		</div>
+		<ul class="cards">
+			{
+				cards.map((card) => (
 					<li class="card">
-						<Icone nome={card.icone} />
+						<IconeDesenhado nome={card.icone} />
 						<h3>{card.titulo}</h3>
 						<p>{card.texto}</p>
 					</li>
-				))}
-			</ul>
-		)
-	}
+				))
+			}
+		</ul>
+	</div>
 </section>
