@@ -19,12 +19,20 @@ npm run build    # gera o dist/
 |---|---|
 | Seções da página principal, na ordem do número do nome | `src/content/home/` |
 | Perguntas frequentes, uma por arquivo | `src/content/perguntas/` |
-| Páginas de aprofundamento (o nome do arquivo vira o endereço) | `src/content/paginas/` |
-| Nome, CRP, WhatsApp, e-mail e ID do Analytics | `src/data/site.ts` |
+| Páginas de "Ler mais" (o nome do arquivo vira o endereço) | `src/content/paginas/` |
+| Fotos, apontadas pelo campo `foto` de cada arquivo de conteúdo | `src/assets/fotos/` |
+| Nome, CRP, WhatsApp, e-mail e ID do Umami | `src/data/site.ts` |
 | Formato de cada tipo de conteúdo | `src/content.config.ts` |
 | Layout e componentes | `src/layouts/`, `src/components/` |
-| Identidade visual | `src/styles/global.css` |
+| Identidade visual (a estrutura em `base.css`, o desenho em `site.css`) | `src/styles/` |
+| Fontes e Content-Security-Policy | `astro.config.mjs` |
+| Cabeçalhos HTTP que o Cloudflare manda (`frame-ancestors` e outros) | `public/_headers` |
+| Imagem da prévia do link e ícones | `public/og.jpg`, `public/favicon.svg`, `public/apple-touch-icon.png` |
 | Regras para a IA que edita o conteúdo | `AGENTS.md` |
+
+As fotos de banco são do StockSnap, licença CC0 (uso livre, sem crédito obrigatório), e ficam até a fotógrafa entregar as dela. Estão em 960 px; a foto da faixa da página de Saberes é a "Leaves Plants" (https://stocksnap.io/photo/leaves-plants-VDPAX2OY3R).
+
+**CSP:** o Astro gera a política numa `<meta>` em cada página, com o hash de cada script e estilo do site. Por isso os scripts dos componentes são `<script>` processados pelo Astro, nunca `<script is:inline>` (o hash de um inline não bate e o navegador bloqueia), e nenhum elemento usa `style="…"`. De fora, só o Umami: o script vem de `cloud.umami.is` e as visitas vão para `gateway.umami.is`.
 
 ## Como o site é publicado
 
