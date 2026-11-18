@@ -28,6 +28,7 @@ npm run build    # gera o dist/
 | Fontes e Content-Security-Policy | `astro.config.mjs` |
 | Cabeçalhos HTTP que o Cloudflare manda (`frame-ancestors` e outros) | `public/_headers` |
 | Imagem da prévia do link e ícones | `public/og.jpg`, `public/favicon.svg`, `public/apple-touch-icon.png` |
+| Verificação do Search Console (não apagar: sem ele, o Google perde a verificação) | `public/googlec9913b470401e77a.html` |
 | Regras para a IA que edita o conteúdo | `AGENTS.md` |
 
 As fotos de banco são do StockSnap, licença CC0 (uso livre, sem crédito obrigatório), e ficam até a fotógrafa entregar as dela. Estão em 960 px; a foto da faixa da página de Saberes é a "Leaves Plants" (https://stocksnap.io/photo/leaves-plants-VDPAX2OY3R).
