@@ -24,11 +24,12 @@ Evite mexer em layout, cores, fontes nem configuração: `src/components/`, `src
 
 ## Como trabalhar
 
-1. Uma alteração por vez.
-2. Antes de salvar, mostre à Carol o trecho como está e como vai ficar, e espere ela aprovar.
-3. Rode `npm run build`. Se falhar, não publique: desfaça a alteração e explique o erro em palavras simples.
-4. Publique: `git add` só dos arquivos alterados, `git commit` com uma mensagem em português que diga o que mudou e `git push` na `main`.
-5. Avise que o site atualiza sozinho em alguns minutos.
+1. Antes de começar, `git pull`: o Gustavo também publica neste repo.
+2. Uma alteração por vez.
+3. Antes de salvar, mostre à Carol o trecho como está e como vai ficar, e espere ela aprovar.
+4. Rode `npm run build`. Se falhar, não publique: desfaça a alteração e explique o erro em palavras simples.
+5. Publique: `git add` só dos arquivos alterados, `git commit` com uma mensagem em português que diga o que mudou e `git push` na `main`.
+6. Avise que o site atualiza sozinho em alguns minutos.
 
 O push na `main` é a publicação: não existe ambiente de teste. Nunca use `git push --force`, nunca reescreva o histórico e nunca apague um arquivo sem a Carol pedir com todas as letras.
 
@@ -58,4 +59,4 @@ E a voz da Carol:
 - Astro 7, site estático. Node na versão do `.nvmrc`.
 - `npm run dev` abre o site em http://localhost:4321 e `npm run build` gera a pasta `dist/`.
 - Documentação do Astro: https://docs.astro.build
-- Este repo é espelhado num repo da conta da Carol, de onde o Cloudflare publica. Os detalhes estão no `README.md`.
+- Este repo é da conta da Carol, e o Cloudflare publica a partir dele. O Gustavo também pode publicar aqui. Os detalhes estão no `README.md`.

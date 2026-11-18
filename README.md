@@ -37,34 +37,25 @@ As fotos de banco são do StockSnap, licença CC0 (uso livre, sem crédito obrig
 ## Como o site é publicado
 
 ```text
-este repo (conta do Gustavo, main)
-  └─ push na main → .github/workflows/mirror.yml
-       └─ git push --force → sitecarolsalomao/psicocarolsalomao.com.br (privado, conta da Carol)
-            └─ Cloudflare Workers Builds da conta da Carol → npm run build → psicocarolsalomao.com.br
+sitecarolsalomao/psicocarolsalomao.com.br (privado, conta da Carol, main)
+  └─ Cloudflare Workers Builds da conta da Carol → npm run build → psicocarolsalomao.com.br
 ```
 
 Só a `main` publica. Não existe preview por branch.
 
-**A regra do espelho:** até a entrega, o repo da conta da Carol é só leitura. Qualquer commit feito lá é apagado na próxima sincronização. Todo commit acontece aqui, e a conta `sitecarolsalomao` não é colaboradora deste repo em nenhum momento. Na entrega a regra inverte: o espelho desliga, o repo dela vira a fonte e a produção, e este repo fica congelado.
+O repo é da Carol, e o Gustavo (`the-almeida`) entra como colaborador, para ajustar o que for preciso. Quem faz push é ela (pela IA no computador dela) ou ele, direto na `main`. Antes de mexer, `git pull`, para não sobrescrever o que o outro publicou.
 
 ## Configuração, uma vez só
 
-### Espelho
-
-As Actions deste repo estão desligadas desde o primeiro push (27/10), para o espelho não rodar e falhar antes de existir. Religar em Settings → Actions → General depois do passo 4.
+### Repo
 
 1. Na conta `sitecarolsalomao`, criar o repo privado `psicocarolsalomao.com.br` **vazio, sem README**, para ele não nascer com commit próprio.
-2. `ssh-keygen -t ed25519 -f mirror_key -N "" -C "espelho psicocarolsalomao"`
-3. `mirror_key.pub` como **deploy key com permissão de escrita** no repo espelho.
-4. O conteúdo de `mirror_key` como secret `MIRROR_SSH_KEY` neste repo.
-5. Apagar `mirror_key` e `mirror_key.pub` da máquina.
-6. Testar: um commit aqui aparece no espelho em menos de um minuto (aba Actions).
-
-O workflow só roda quando o dono do repo é `the-almeida`. O arquivo também chega ao espelho, e lá ele não pode rodar.
+2. Settings → Collaborators → convidar `the-almeida`, e aceitar o convite na conta dele.
+3. Primeiro push da `main` a partir do clone do Gustavo.
 
 ### Cloudflare (conta da Carol)
 
-1. Workers → Create → importar o **repo espelho** (nunca este). O nome do Worker precisa ser igual ao `name` do `wrangler.jsonc`: `psicocarolsalomao`.
+1. Workers → Create → importar este repo, conectando o GitHub como `sitecarolsalomao`. O nome do Worker precisa ser igual ao `name` do `wrangler.jsonc`: `psicocarolsalomao`.
 2. Build: `npm run build`. Deploy: `npx wrangler deploy`. Branch de produção: `main`. Preview de branch desligado.
 3. Conferir o site no endereço `*.workers.dev` antes de encostar no domínio.
 4. Virada do domínio: tirar `psicocarolsalomao.com.br` do Worker temporário, adicionar no Worker novo, esperar o certificado, conferir o site, o 301 do `www` e o HTTPS. Só então apagar o temporário. Dois Workers não respondem pelo mesmo domínio.
@@ -78,4 +69,3 @@ Painel da Cloudflare → Workers → `psicocarolsalomao` → Deployments → esc
 
 - O `.nvmrc` fixa o Node 24, a LTS mais recente, só pela versão maior. O build da Cloudflare já traz o 24 pré-instalado e as correções de segurança da linha 24 entram sem mexer no repo.
 - Node 24 sai de manutenção em abril de 2028. Para trocar, mudar o `.nvmrc` e o `engines` do `package.json` juntos.
-- As Actions do workflow estão fixadas por hash de commit, com a versão no comentário.
